@@ -2,6 +2,8 @@
 
 Une application complète pour la simulation et la visualisation de cotations boursières en temps réel utilisant Server-Sent Events (SSE).
 
+<img width="926" height="576" alt="Capture d’écran 2025-09-11 à 14 54 25" src="https://github.com/user-attachments/assets/75308ee0-eac5-4078-b262-902e816a8f42" />
+
 ## 🏗️ Architecture
 
 L'application est composée de deux parties principales :
