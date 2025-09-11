@@ -1,0 +1,17 @@
+{
+  "name": "task-status-system",
+  "version": "1.0.0",
+  "description": "Système de mise à jour du statut d'une tâche avec Long Polling",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.0",
+    "cors": "^2.8.5"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

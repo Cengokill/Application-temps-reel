@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotations Boursières - Temps Réel</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="window-title">
+            📈 Cotations Boursières Temps Réel
+        </div>
+
+        <div class="window-content">
+            <div id="status" class="status disconnected">
+                🔴 Connexion au serveur...
+            </div>
+
+            <div class="stocks-grid" id="stocks-container">
+                <!-- Les cartes de cotations seront insérées ici -->
+            </div>
+
+        <div id="last-update" class="last-update">
+            En attente de données...
+        </div>
+
+        <!-- Modal pour les graphiques détaillés -->
+        <div id="chartModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span id="modalTitle">Graphique Détaillé - AAPL</span>
+                    <span class="close">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="chart-container">
+                        <canvas id="detailedChart"></canvas>
+                    </div>
+                    <div class="indicators-container" id="indicatorsContainer">
+                        <!-- Les indicateurs techniques seront insérés ici -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class StockDisplay {
+            constructor() {
+                this.eventSource = null;
+                this.stocksData = {};
+                this.statusElement = document.getElementById('status');
+                this.containerElement = document.getElementById('stocks-container');
+                this.lastUpdateElement = document.getElementById('last-update');
+
+                this.init();
+            }
+
+            init() {
+                this.connectToSSE();
+            }
+
+            connectToSSE() {
+                // Fermer la connexion existante si elle existe
+                if (this.eventSource) {
+                    this.eventSource.close();
+                }
+
+                this.updateStatus('connecting');
+
+                // Créer une nouvelle connexion SSE
+                this.eventSource = new EventSource('http://localhost:3000/api/stocks/sse');
+
+                // Gestionnaire pour les messages reçus
+                this.eventSource.onmessage = (event) => {
+                    try {
+                        // Nouveau format : UNE action à la fois
+                        const stockUpdate = JSON.parse(event.data);
+                        console.log('📈 Données reçues:', stockUpdate); // Debug
+                        console.log('📊 Historique:', stockUpdate.history); // Debug
+                        this.updateSingleStock(stockUpdate);
+                        this.updateStatus('connected');
+                        this.updateLastUpdate();
+                    } catch (error) {
+                        console.error('Erreur lors du parsing des données:', error);
+                        this.updateStatus('error');
+                    }
+                };
+
+                // Gestionnaire d'ouverture de connexion
+                this.eventSource.onopen = () => {
+                    console.log('Connexion SSE établie');
+                    this.updateStatus('connected');
+                };
+
+                // Gestionnaire d'erreur
+                this.eventSource.onerror = (error) => {
+                    console.error('Erreur SSE:', error);
+                    this.updateStatus('disconnected');
+
+                    // Tentative de reconnexion après 5 secondes
+                    setTimeout(() => {
+                        console.log('Tentative de reconnexion...');
+                        this.connectToSSE();
+                    }, 5000);
+                };
+            }
+
+            updateStatus(status) {
+                const statusElement = this.statusElement;
+
+                switch (status) {
+                    case 'connected':
+                        statusElement.textContent = '🟢 Connecté au serveur - Données en temps réel';
+                        statusElement.className = 'status connected';
+                        break;
+                    case 'connecting':
+                        statusElement.textContent = '🟡 Connexion en cours...';
+                        statusElement.className = 'status';
+                        break;
+                    case 'disconnected':
+                        statusElement.textContent = '🔴 Déconnecté - Tentative de reconnexion...';
+                        statusElement.className = 'status disconnected';
+                        break;
+                    case 'error':
+                        statusElement.textContent = '❌ Erreur de connexion';
+                        statusElement.className = 'status disconnected';
+                        break;
+                }
+            }
+
+            updateSingleStock(stockUpdate) {
+                // Mettre à jour une seule action (comme en Python)
+                this.stocksData[stockUpdate.symbol] = stockUpdate;
+
+                // Mettre à jour seulement la carte de cette action
+                this.updateStockCard(stockUpdate);
+
+                // Mettre à jour le sparkline avec les nouvelles données
+                if (stockUpdate.history && stockUpdate.history.length > 0) {
+                    // Délai pour s'assurer que le DOM est mis à jour
+                    setTimeout(() => {
+                        createSparkline(stockUpdate.symbol, stockUpdate.history);
+                    }, 50);
+                }
+            }
+
+            updateStocks(stocks) {
+                // Version pour tableau d'actions (gardée pour compatibilité)
+                stocks.forEach(stock => {
+                    this.stocksData[stock.symbol] = stock;
+                });
+                this.renderStocks();
+            }
+
+            renderStocks() {
+                const container = this.containerElement;
+                container.innerHTML = '';
+
+                Object.values(this.stocksData).forEach(stock => {
+                    const card = this.createStockCard(stock);
+                    container.appendChild(card);
+                });
+
+                // Créer les sparklines pour toutes les actions
+                Object.values(this.stocksData).forEach(stock => {
+                    if (stock.history && stock.history.length > 0) {
+                        setTimeout(() => createSparkline(stock.symbol, stock.history), 100);
+                    } else {
+                        // Créer un sparkline vide avec le prix actuel
+                        const emptyHistory = Array(30).fill(stock.price);
+                        setTimeout(() => createSparkline(stock.symbol, emptyHistory), 100);
+                    }
+                });
+            }
+
+            updateStockCard(stockUpdate) {
+                // Chercher la carte existante pour cette action
+                const existingCard = document.querySelector(`[data-symbol="${stockUpdate.symbol}"]`);
+
+                if (existingCard) {
+                    // Mettre à jour la carte existante
+                    const priceElement = existingCard.querySelector('.stock-price');
+                    const changeElement = existingCard.querySelector('.stock-change');
+                    const timestampElement = existingCard.querySelector('.stock-timestamp');
+
+                    if (priceElement) {
+                        priceElement.textContent = `$${stockUpdate.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                    }
+
+                    if (changeElement) {
+                        // Calcul du pourcentage basé sur la différence de prix
+                        const currentPrice = stockUpdate.price;
+                        const previousPrice = currentPrice - stockUpdate.change;
+                        const percentageChange = ((stockUpdate.change / previousPrice) * 100);
+
+                        const changeClass = percentageChange >= 0 ? 'positive' : 'negative';
+                        const changeSymbol = percentageChange >= 0 ? '📈' : '📉';
+                        const changeText = `${changeSymbol} ${percentageChange >= 0 ? '+' : ''}${percentageChange.toFixed(2)}%`;
+                        changeElement.className = `stock-change ${changeClass}`;
+                        changeElement.textContent = changeText;
+                    }
+
+                    if (timestampElement) {
+                        timestampElement.textContent = `Mis à jour: ${new Date(stockUpdate.timestamp).toLocaleTimeString('fr-FR')}`;
+                    }
+
+                    // Animation de mise à jour
+                    existingCard.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        existingCard.style.transform = 'scale(1)';
+                    }, 200);
+
+                } else {
+                    // Si la carte n'existe pas, créer toutes les cartes
+                    this.renderStocks();
+                }
+            }
+
+            createStockCard(stock) {
+                const card = document.createElement('div');
+                card.className = 'stock-card';
+                card.setAttribute('data-symbol', stock.symbol); // Pour identifier la carte
+
+                // Calcul du pourcentage basé sur la différence de prix
+                const currentPrice = stock.price;
+                const previousPrice = currentPrice - stock.change;
+                const percentageChange = ((stock.change / previousPrice) * 100);
+
+                const changeClass = percentageChange >= 0 ? 'positive' : 'negative';
+                const changeSymbol = percentageChange >= 0 ? '📈' : '📉';
+                const changeText = `${changeSymbol} ${percentageChange >= 0 ? '+' : ''}${percentageChange.toFixed(2)}%`;
+
+                card.innerHTML = `
+                    <div class="stock-symbol">${stock.symbol}</div>
+                    <div class="stock-price">$${stock.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                    <div class="stock-change ${changeClass}">${changeText}</div>
+                    <div class="sparkline-container">
+                        <canvas class="sparkline-canvas" id="sparkline-${stock.symbol}"></canvas>
+                    </div>
+                    <button class="chart-button" onclick="openDetailedChart('${stock.symbol}')">📊 Graphique</button>
+                    <div class="stock-timestamp">Mis à jour: ${new Date(stock.timestamp).toLocaleTimeString('fr-FR')}</div>
+                `;
+
+                return card;
+            }
+
+            updateLastUpdate() {
+                const now = new Date();
+                this.lastUpdateElement.textContent = `Dernière mise à jour: ${now.toLocaleTimeString('fr-FR')} - ${now.toLocaleDateString('fr-FR')}`;
+            }
+
+            // Méthode pour fermer proprement la connexion
+            disconnect() {
+                if (this.eventSource) {
+                    this.eventSource.close();
+                    this.eventSource = null;
+                }
+                this.updateStatus('disconnected');
+            }
+        }
+
+        // Variables globales pour les graphiques (optimisées)
+        let sparklineCharts = {};
+        let detailedChart = null;
+        let historyCache = {}; // Cache pour éviter les rechargements
+
+        // Fonction pour créer un mini-graphique sparkline optimisé
+        function createSparkline(symbol, data) {
+            console.log(`📊 Création sparkline pour ${symbol}:`, data ? data.length : 0, 'points'); // Debug
+            const canvas = document.getElementById(`sparkline-${symbol}`);
+            if (!canvas) {
+                console.log(`❌ Canvas sparkline-${symbol} non trouvé`); // Debug
+                return;
+            }
+
+            const ctx = canvas.getContext('2d');
+
+            // Vérifier si les données existent et sont suffisantes
+            if (!data || !Array.isArray(data) || data.length === 0) {
+                console.log(`⚠️ Pas assez de données pour ${symbol}, utilisation du prix actuel`);
+                // Créer une ligne plate avec le prix actuel si pas de données
+                const currentPrice = parseFloat(document.querySelector(`[data-symbol="${symbol}"] .stock-price`)?.textContent?.replace(/[$,]/g, '') || '100');
+                data = Array(20).fill(currentPrice);
+            }
+
+            // Utiliser seulement les 30 dernières valeurs pour les sparklines (optimisation)
+            let sparklineData = data.slice(-30);
+
+            // Vérifier si toutes les valeurs sont identiques (sparkline plate)
+            const allSame = sparklineData.every(val => val === sparklineData[0]);
+            if (allSame && sparklineData.length > 1) {
+                console.log(`⚠️ Sparkline plate détectée pour ${symbol}, ajout de variation artificielle`);
+                // Ajouter une petite variation pour rendre le graphique visible
+                const basePrice = sparklineData[0];
+                sparklineData = sparklineData.map((val, index) => {
+                    const variation = (Math.random() - 0.5) * 0.02 * basePrice; // +/- 2% variation
+                    return basePrice + variation;
+                });
+            }
+
+            // Détruire le graphique existant s'il y en a un
+            if (sparklineCharts[symbol]) {
+                sparklineCharts[symbol].destroy();
+            }
+
+            // Créer le nouveau graphique optimisé
+            sparklineCharts[symbol] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sparklineData.map((_, i) => i.toString()),
+                    datasets: [{
+                        data: sparklineData,
+                        borderColor: sparklineData[sparklineData.length - 1] >= sparklineData[0] ? '#008000' : '#ff0000',
+                        backgroundColor: 'rgba(0, 128, 0, 0.1)',
+                        borderWidth: 1,
+                        pointRadius: 0,
+                        fill: true,
+                        tension: 0.4,
+                        cubicInterpolationMode: 'monotone' // Optimisation des courbes
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 200 // Animation plus rapide
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false
+                        },
+                        y: {
+                            display: false
+                        }
+                    },
+                    elements: {
+                        point: {
+                            hoverRadius: 0
+                        }
+                    }
+                }
+            });
+        }
+
+        // Fonction pour ouvrir le graphique détaillé (optimisée avec cache)
+        async function openDetailedChart(symbol) {
+            try {
+                // Vérifier le cache (valide pendant 30 secondes)
+                const cacheKey = `${symbol}_history`;
+                const now = Date.now();
+                let data;
+
+                if (historyCache[cacheKey] && (now - historyCache[cacheKey].timestamp) < 30000) {
+                    data = historyCache[cacheKey].data;
+                } else {
+                    // Récupérer les données historiques
+                    const response = await fetch(`/api/stocks/${symbol}/history`);
+                    data = await response.json();
+
+                    // Mettre en cache
+                    historyCache[cacheKey] = {
+                        data: data,
+                        timestamp: now
+                    };
+
+                    // Limiter la taille du cache
+                    const cacheKeys = Object.keys(historyCache);
+                    if (cacheKeys.length > 10) {
+                        delete historyCache[cacheKeys[0]];
+                    }
+                }
+
+                // Mettre à jour le titre du modal
+                document.getElementById('modalTitle').textContent = `Graphique Détaillé - ${symbol}`;
+
+                // Créer le graphique détaillé
+                createDetailedChart(symbol, data);
+
+                // Calculer et afficher les indicateurs
+                createTechnicalIndicators(symbol, data);
+
+                // Afficher le modal
+                document.getElementById('chartModal').style.display = 'block';
+            } catch (error) {
+                console.error('Erreur lors du chargement du graphique:', error);
+            }
+        }
+
+        // Fonction pour créer le graphique détaillé optimisé
+        function createDetailedChart(symbol, data) {
+            const ctx = document.getElementById('detailedChart').getContext('2d');
+
+            // Détruire le graphique existant
+            if (detailedChart) {
+                detailedChart.destroy();
+            }
+
+            // Optimiser les données pour les gros volumes
+            const history = data.history;
+            const timestamps = data.timestamps;
+
+            // Si plus de 200 points, échantillonner pour de meilleures performances
+            let displayData = history;
+            let displayLabels = timestamps;
+
+            if (history.length > 200) {
+                const step = Math.ceil(history.length / 200);
+                displayData = history.filter((_, index) => index % step === 0);
+                displayLabels = timestamps.filter((_, index) => index % step === 0);
+            }
+
+            // Créer les labels de temps optimisés
+            const labels = displayLabels.map(timestamp =>
+                new Date(timestamp).toLocaleTimeString('fr-FR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                })
+            );
+
+            // Créer le graphique optimisé
+            detailedChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: symbol,
+                        data: displayData,
+                        borderColor: '#000080',
+                        backgroundColor: 'rgba(0, 0, 128, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: displayData.length > 100 ? 0 : 2, // Pas de points si beaucoup de données
+                        pointHoverRadius: 5,
+                        cubicInterpolationMode: 'monotone' // Meilleure interpolation
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: displayData.length > 100 ? 0 : 400 // Pas d'animation pour gros volumes
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${symbol}: $${context.parsed.y.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Temps'
+                            },
+                            ticks: {
+                                maxTicksLimit: 10 // Limiter le nombre de ticks
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Prix ($)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toFixed(2);
+                                },
+                                maxTicksLimit: 8
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    },
+                    elements: {
+                        point: {
+                            hoverBorderWidth: 3
+                        }
+                    }
+                }
+            });
+        }
+
+        // Fonction pour calculer et afficher les indicateurs techniques
+        function createTechnicalIndicators(symbol, data) {
+            const history = data.history;
+
+            // Moyenne mobile simple (20 périodes)
+            const sma20 = calculateSMA(history, 20);
+
+            // RSI (14 périodes)
+            const rsi = calculateRSI(history, 14);
+
+            // Volatilité (écart-type)
+            const volatility = calculateVolatility(history);
+
+            // Tendance
+            const trend = history[history.length - 1] > history[0] ? 'HAUSSIÈRE' : 'BAISSIÈRE';
+
+            // Créer les cartes d'indicateurs
+            const indicatorsContainer = document.getElementById('indicatorsContainer');
+            indicatorsContainer.innerHTML = `
+                <div class="indicator-card">
+                    <div class="indicator-label">Prix Actuel</div>
+                    <div class="indicator-value">$${data.currentPrice.toFixed(2)}</div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-label">Moyenne Mobile (20)</div>
+                    <div class="indicator-value ${sma20 >= data.currentPrice ? 'indicator-negative' : 'indicator-positive'}">$${sma20.toFixed(2)}</div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-label">RSI (14)</div>
+                    <div class="indicator-value ${rsi > 70 ? 'indicator-negative' : rsi < 30 ? 'indicator-positive' : ''}">${rsi.toFixed(1)}</div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-label">Volatilité</div>
+                    <div class="indicator-value">${volatility.toFixed(2)}%</div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-label">Tendance</div>
+                    <div class="indicator-value ${trend === 'HAUSSIÈRE' ? 'indicator-positive' : 'indicator-negative'}">${trend}</div>
+                </div>
+            `;
+        }
+
+        // Fonctions utilitaires pour les indicateurs
+        function calculateSMA(data, period) {
+            if (data.length < period) return data[data.length - 1];
+            const sum = data.slice(-period).reduce((a, b) => a + b, 0);
+            return sum / period;
+        }
+
+        function calculateRSI(data, period) {
+            if (data.length < period + 1) return 50;
+
+            let gains = 0;
+            let losses = 0;
+
+            for (let i = data.length - period; i < data.length; i++) {
+                const change = data[i] - data[i - 1];
+                if (change > 0) gains += change;
+                else losses -= change;
+            }
+
+            if (losses === 0) return 100;
+
+            const rs = gains / losses;
+            return 100 - (100 / (1 + rs));
+        }
+
+        function calculateVolatility(data) {
+            if (data.length < 2) return 0;
+
+            const mean = data.reduce((a, b) => a + b, 0) / data.length;
+            const variance = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / data.length;
+            const stdDev = Math.sqrt(variance);
+
+            return (stdDev / mean) * 100;
+        }
+
+        // Fonction pour nettoyer les anciens sparklines (optimisation mémoire)
+        function cleanupSparklines() {
+            const maxSparklines = 10; // Garder seulement 10 sparklines en mémoire
+            const symbols = Object.keys(sparklineCharts);
+
+            if (symbols.length > maxSparklines) {
+                const symbolsToRemove = symbols.slice(0, symbols.length - maxSparklines);
+                symbolsToRemove.forEach(symbol => {
+                    if (sparklineCharts[symbol]) {
+                        sparklineCharts[symbol].destroy();
+                        delete sparklineCharts[symbol];
+                    }
+                });
+            }
+        }
+
+        // Fonction pour nettoyer le cache périodiquement
+        function cleanupCache() {
+            const now = Date.now();
+            const maxAge = 5 * 60 * 1000; // 5 minutes
+
+            Object.keys(historyCache).forEach(key => {
+                if (now - historyCache[key].timestamp > maxAge) {
+                    delete historyCache[key];
+                }
+            });
+        }
+
+        // Nettoyer périodiquement (toutes les 30 secondes)
+        setInterval(() => {
+            cleanupSparklines();
+            cleanupCache();
+        }, 30000);
+
+        // Gestionnaire pour fermer le modal
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('chartModal');
+            const closeBtn = document.getElementsByClassName('close')[0];
+
+            closeBtn.onclick = function() {
+                modal.style.display = 'none';
+                if (detailedChart) {
+                    detailedChart.destroy();
+                    detailedChart = null;
+                }
+            }
+
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                    if (detailedChart) {
+                        detailedChart.destroy();
+                        detailedChart = null;
+                    }
+                }
+            }
+        });
+
+        // Initialisation de l'application
+        document.addEventListener('DOMContentLoaded', () => {
+            const stockDisplay = new StockDisplay();
+
+            // Gestionnaire pour fermer proprement la connexion lors de la fermeture de la page
+            window.addEventListener('beforeunload', () => {
+                stockDisplay.disconnect();
+            });
+        });
+    </script>
+</body>
+</html>

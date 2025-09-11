@@ -1,0 +1,309 @@
+/* Style Windows 98 - Années 2000 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'MS Sans Serif', Arial, sans-serif;
+    background: #008080; /* Bleu Windows 98 */
+    color: #000000;
+    min-height: 100vh;
+    padding: 10px 10px 50px 10px; /* Padding bottom augmenté pour le bandeau */
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #C0C0C0; /* Gris Windows 98 */
+    border: 2px outset #C0C0C0;
+    border-top: 2px outset #DFDFDF;
+    border-left: 2px outset #DFDFDF;
+    overflow: hidden;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    background: linear-gradient(to right, #000080, #008080); /* Dégradé bleu Windows */
+    color: white;
+    padding: 8px 12px;
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: bold;
+    border-bottom: 1px solid #000000;
+    text-shadow: 1px 1px 0px #000000;
+}
+
+h2 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #000000;
+    background: #C0C0C0;
+    padding: 4px 8px;
+    border: 1px inset #C0C0C0;
+    font-weight: bold;
+}
+
+.status-section, .admin-section, .logs-section {
+    padding: 15px;
+    border-bottom: 1px inset #808080;
+    background: #C0C0C0;
+}
+
+.status-section {
+    background: #C0C0C0;
+}
+
+.status-display {
+    text-align: center;
+    margin: 15px 0;
+    padding: 10px;
+    background: white;
+    border: 2px inset #C0C0C0;
+}
+
+.status-text {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-shadow: 1px 1px 0px #808080;
+}
+
+.status-version {
+    color: #000080;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+/* Couleurs pour les différents statuts */
+.status-en-attente { color: #FF6600; text-shadow: 1px 1px 0px #000000; }
+.status-en-cours { color: #0080FF; text-shadow: 1px 1px 0px #000000; }
+.status-terminée { color: #008000; text-shadow: 1px 1px 0px #000000; }
+.status-échec { color: #FF0000; text-shadow: 1px 1px 0px #000000; }
+
+.connection-status {
+    text-align: center;
+    margin-top: 10px;
+    padding: 8px;
+    border: 1px inset #C0C0C0;
+    font-size: 0.85rem;
+    background: #C0C0C0;
+}
+
+.connection-connected {
+    background: #C0C0C0;
+    color: #008000;
+    border: 1px inset #C0C0C0;
+    font-weight: bold;
+}
+
+.connection-waiting {
+    background: #FFFF99;
+    color: #000080;
+    border: 1px inset #C0C0C0;
+    font-weight: bold;
+}
+
+.connection-error {
+    background: #FFC0C0;
+    color: #800000;
+    border: 1px inset #C0C0C0;
+    font-weight: bold;
+}
+
+.admin-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    align-items: center;
+}
+
+#statusSelect {
+    flex: 1;
+    padding: 6px 8px;
+    border: 2px inset #C0C0C0;
+    background: white;
+    font-size: 0.9rem;
+    font-family: 'MS Sans Serif', Arial, sans-serif;
+    color: #000000;
+}
+
+#statusSelect:focus {
+    outline: none;
+    border: 2px inset #808080;
+    background: #FFFFE0;
+}
+
+#updateButton {
+    padding: 6px 16px;
+    background: #C0C0C0;
+    color: #000000;
+    border: 2px outset #C0C0C0;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-family: 'MS Sans Serif', Arial, sans-serif;
+    font-weight: bold;
+    text-shadow: 1px 1px 0px white;
+}
+
+#updateButton:hover {
+    background: #DFDFDF;
+    border: 2px inset #C0C0C0;
+}
+
+#updateButton:active {
+    background: #808080;
+    border: 2px inset #C0C0C0;
+    padding: 7px 15px 5px 17px;
+    text-shadow: none;
+}
+
+#updateButton:disabled {
+    background: #C0C0C0;
+    color: #808080;
+    border: 2px outset #C0C0C0;
+    cursor: not-allowed;
+    text-shadow: none;
+}
+
+.admin-message {
+    min-height: 18px;
+    font-size: 0.85rem;
+    background: #C0C0C0;
+    padding: 4px 8px;
+    border: 1px inset #C0C0C0;
+    margin-top: 8px;
+}
+
+.admin-message.success {
+    color: #008000;
+    font-weight: bold;
+}
+
+.admin-message.error {
+    color: #800000;
+    font-weight: bold;
+}
+
+.logs {
+    max-height: 180px;
+    overflow-y: auto;
+    border: 2px inset #C0C0C0;
+    background: white;
+    padding: 2px;
+}
+
+.log-entry {
+    padding: 6px 8px;
+    border-bottom: 1px solid #808080;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    color: #000000;
+    background: white;
+}
+
+.log-entry:last-child {
+    border-bottom: none;
+}
+
+.log-entry.timestamp::before {
+    content: attr(data-timestamp) " - ";
+    color: #008000;
+    font-weight: bold;
+}
+
+/* Bandeau dynamique */
+.news-ticker {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: linear-gradient(to right, #000080, #008080);
+    border-top: 2px outset #DFDFDF;
+    overflow: hidden;
+    z-index: 1000;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.ticker-content {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    font-family: 'MS Sans Serif', Arial, sans-serif;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 0px #000000;
+    white-space: nowrap;
+    animation: scroll-left 30s linear infinite;
+}
+
+.ticker-content::before {
+    content: "🔄";
+    margin-right: 20px;
+    animation: spin 2s linear infinite;
+}
+
+.ticker-item {
+    display: inline-block;
+    margin-right: 40px;
+    padding: 0 15px;
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.ticker-item:last-child {
+    margin-right: 0;
+    border-right: none;
+}
+
+@keyframes scroll-left {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive Windows 98 style */
+@media (max-width: 600px) {
+    .container {
+        margin: 5px;
+    }
+
+    .admin-controls {
+        flex-direction: column;
+    }
+
+    #updateButton {
+        width: 100%;
+    }
+
+    .status-text {
+        font-size: 1.6rem;
+    }
+
+    .news-ticker {
+        height: 25px;
+        font-size: 0.75rem;
+    }
+
+    .ticker-item {
+        margin-right: 20px;
+        padding: 0 8px;
+    }
+}

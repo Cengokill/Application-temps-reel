@@ -1,0 +1,342 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'MS Sans Serif', sans-serif;
+    background: #008080; /* Teal background like Windows 98 */
+    min-height: 100vh;
+    padding: 10px;
+    color: #000000;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: #c0c0c0; /* Classic gray */
+    border: 2px outset #c0c0c0;
+    padding: 5px;
+    box-shadow: inset 2px 2px 2px rgba(255,255,255,0.8), inset -2px -2px 2px rgba(0,0,0,0.3);
+}
+
+.window-title {
+    background: linear-gradient(90deg, #000080 0%, #1084d0 100%);
+    color: white;
+    padding: 3px 5px;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 5px;
+    border: 1px inset #c0c0c0;
+}
+
+.window-content {
+    background: #c0c0c0;
+    border: 1px inset #c0c0c0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #000000;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.5);
+}
+
+.status {
+    text-align: center;
+    margin-bottom: 15px;
+    padding: 8px;
+    border: 2px inset #c0c0c0;
+    font-weight: bold;
+    font-size: 12px;
+    background: #c0c0c0;
+}
+
+.status.connected {
+    background-color: #c0c0c0;
+    color: #008000;
+    border: 2px inset #c0c0c0;
+}
+
+.status.disconnected {
+    background-color: #c0c0c0;
+    color: #ff0000;
+    border: 2px inset #c0c0c0;
+}
+
+.stocks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.stock-card {
+    background: #c0c0c0;
+    border: 2px outset #c0c0c0;
+    padding: 15px;
+    box-shadow: 3px 3px 3px rgba(0,0,0,0.3), inset 1px 1px 1px rgba(255,255,255,0.8);
+}
+
+.stock-card:hover {
+    border: 2px inset #c0c0c0;
+    box-shadow: inset 2px 2px 2px rgba(255,255,255,0.8), inset -2px -2px 2px rgba(0,0,0,0.3);
+}
+
+.stock-symbol {
+    font-size: 16px;
+    font-weight: bold;
+    color: #000000;
+    margin-bottom: 8px;
+    background: #000080;
+    color: white;
+    padding: 2px 5px;
+    display: inline-block;
+    border: 1px outset #c0c0c0;
+}
+
+.stock-price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #008000;
+    margin-bottom: 5px;
+    font-family: 'Courier New', monospace;
+}
+
+.stock-change {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    padding: 2px 4px;
+    display: inline-block;
+    border: 1px outset #c0c0c0;
+}
+
+.stock-change.positive {
+    color: #008000;
+    background: #90ee90;
+}
+
+.stock-change.negative {
+    color: #ff0000;
+    background: #ffb6c1;
+}
+
+.stock-timestamp {
+    font-size: 10px;
+    color: #000000;
+    font-style: italic;
+}
+
+.last-update {
+    text-align: center;
+    margin-top: 15px;
+    color: #000000;
+    font-style: italic;
+    font-size: 11px;
+    padding: 5px;
+    border: 1px inset #c0c0c0;
+    background: #c0c0c0;
+}
+
+/* Styles pour les graphiques */
+.sparkline-container {
+    height: 40px;
+    width: 100%;
+    margin-top: 8px;
+    border: 1px inset #c0c0c0;
+    background: #c0c0c0;
+    padding: 2px;
+}
+
+.sparkline-canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Bouton pour ouvrir le graphique détaillé */
+.chart-button {
+    background: #c0c0c0;
+    border: 2px outset #c0c0c0;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-family: 'MS Sans Serif', sans-serif;
+    cursor: pointer;
+    margin-top: 5px;
+    width: 100%;
+}
+
+.chart-button:hover {
+    border: 2px inset #c0c0c0;
+}
+
+.chart-button:active {
+    border: 2px inset #c0c0c0;
+    padding: 3px 7px 1px 9px;
+}
+
+/* Modal pour les graphiques détaillés */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal-content {
+    background: #c0c0c0;
+    margin: 5% auto;
+    padding: 5px;
+    border: 2px outset #c0c0c0;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+    background: linear-gradient(90deg, #000080 0%, #1084d0 100%);
+    color: white;
+    padding: 8px;
+    font-weight: bold;
+    font-size: 14px;
+    border: 1px inset #c0c0c0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close {
+    color: white;
+    float: right;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    background: #c0c0c0;
+    border: 2px outset #c0c0c0;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 10px;
+}
+
+.close:hover {
+    border: 2px inset #c0c0c0;
+    background: #d0d0d0;
+}
+
+.modal-body {
+    padding: 15px;
+    background: #c0c0c0;
+    border: 1px inset #c0c0c0;
+}
+
+.chart-container {
+    height: 400px;
+    margin: 10px 0;
+    border: 2px inset #c0c0c0;
+    background: white;
+    padding: 10px;
+}
+
+.indicators-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.indicator-card {
+    background: #c0c0c0;
+    border: 2px outset #c0c0c0;
+    padding: 8px;
+    text-align: center;
+}
+
+.indicator-label {
+    font-size: 10px;
+    color: #000080;
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.indicator-value {
+    font-size: 14px;
+    font-weight: bold;
+    color: #000000;
+}
+
+.indicator-positive {
+    color: #008000;
+}
+
+.indicator-negative {
+    color: #ff0000;
+}
+
+/* Windows 98 style buttons */
+.win98-button {
+    background: #c0c0c0;
+    border: 2px outset #c0c0c0;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-family: 'MS Sans Serif', sans-serif;
+    cursor: pointer;
+    margin: 2px;
+}
+
+.win98-button:hover {
+    border: 2px inset #c0c0c0;
+}
+
+.win98-button:active {
+    border: 2px inset #c0c0c0;
+    padding: 4px 9px 2px 11px;
+}
+
+/* Windows 98 style scrollbar simulation */
+::-webkit-scrollbar {
+    width: 16px;
+    height: 16px;
+}
+
+::-webkit-scrollbar-track {
+    background: #c0c0c0;
+    border: 1px inset #c0c0c0;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c0c0c0;
+    border: 1px outset #c0c0c0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #d0d0d0;
+}
+
+::-webkit-scrollbar-corner {
+    background: #c0c0c0;
+}
+
+@media (max-width: 768px) {
+    .stocks-grid {
+        grid-template-columns: 1fr;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    .container {
+        margin: 5px;
+    }
+}

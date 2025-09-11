@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système de Suivi des Tâches</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Système de suivi des tâches</h1>
+
+        <div class="status-section">
+            <h2>État Actuel de la Tâche</h2>
+            <div class="status-display" id="statusDisplay">
+                <div class="status-text" id="statusText">Chargement...</div>
+                <div class="status-version" id="statusVersion"></div>
+            </div>
+            <div class="connection-status" id="connectionStatus">
+                Connexion au serveur...
+            </div>
+        </div>
+
+        <div class="admin-section">
+            <h2>Panneau d'administration</h2>
+            <div class="admin-controls">
+                <select id="statusSelect">
+                    <option value="En attente">En attente</option>
+                    <option value="En cours">En cours</option>
+                    <option value="Terminée">Terminée</option>
+                    <option value="Échec">Échec</option>
+                </select>
+                <button id="updateButton">Mettre à Jour le Statut</button>
+            </div>
+            <div class="admin-message" id="adminMessage"></div>
+        </div>
+
+        <div class="logs-section">
+            <h2>Logs d'Activité</h2>
+            <div class="logs" id="logs">
+                <div class="log-entry">Système initialisé</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bandeau dynamique -->
+    <div class="news-ticker">
+        <div class="ticker-content" id="tickerContent">
+            <!-- Le contenu sera généré dynamiquement par JavaScript -->
+        </div>
+    </div>
+
+    <script src="client.js"></script>
+</body>
+</html>
