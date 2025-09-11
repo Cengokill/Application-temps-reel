@@ -204,6 +204,46 @@ button:focus {
     );
 }
 
+#imageButton {
+    background: linear-gradient(to bottom,
+        #CCFFCC 0%,
+        #99FF99 25%,
+        #66FF66 50%,
+        #33FF33 75%,
+        #00FF00 100%
+    );
+    min-width: 70px;
+    font-size: 11px;
+}
+
+#imageButton:hover {
+    background: linear-gradient(to bottom,
+        #DDFFDD 0%,
+        #AAFFAA 25%,
+        #77FF77 50%,
+        #44FF44 75%,
+        #11FF11 100%
+    );
+}
+
+/* Styles pour les images partagées */
+.message img {
+    max-width: 300px;
+    max-height: 200px;
+    border: 2px inset #C0C0C0;
+    margin-top: 5px;
+    box-shadow: inset 2px 2px 4px #808080;
+    display: block;
+}
+
+.message img + span {
+    display: block;
+    margin-top: 5px;
+    color: #666666;
+    font-size: 10px;
+    font-style: italic;
+}
+
 /* Scrollbar style pour ressembler à Windows 98 */
 ::-webkit-scrollbar {
     width: 16px;

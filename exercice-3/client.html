@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="window">
-        <div class="window-title">💬 Chat WebSocket - Windows 98 Style</div>
+        <div class="window-title">💬 Chat WebSocket</div>
         <div class="window-content">
             <h1>Chat WebSocket</h1>
 
@@ -19,6 +19,7 @@
             <div class="input-container">
                 <input type="text" id="messageInput" placeholder="Tapez votre message ici..." />
                 <button id="sendButton">Envoyer</button>
+                <button id="imageButton">📷 Image</button>
                 <button id="timestampToggle">Désactiver horodatage</button>
             </div>
         </div>
@@ -33,11 +34,13 @@
         const messagesDiv = document.getElementById('messages');
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
+        const imageButton = document.getElementById('imageButton');
         const timestampToggle = document.getElementById('timestampToggle');
 
         // Variables de configuration
         let lastSentMessage = null;
         let showTimestamps = true;
+        let pendingImageUrl = null;
 
         // Gestionnaire d'événement pour la connexion établie
         ws.onopen = function(event) {
@@ -50,13 +53,47 @@
         ws.onmessage = function(event) {
             console.log('Message reçu:', event.data);
 
-            // Extraire le message sans le timestamp pour la comparaison
-            const messageContent = event.data.replace(/^\[[^\]]+\]\s*/, '');
-            
+            // Extraire le contenu du message (après le timestamp et le pseudo)
+            const messageMatch = event.data.match(/^\[([^\]]+)\]\s*<span[^>]+style="color:\s*([^"]+)"[^>]*>([^<]+)<\/span>:\s*(.+)$/);
+            var messageContent = '';
+            var username = '';
+            var userColor = '';
+            var imageUrl = null;
+
+            if (messageMatch) {
+                // Message avec pseudo coloré
+                const timestamp = messageMatch[1];
+                userColor = messageMatch[2];
+                username = messageMatch[3];
+                messageContent = messageMatch[4];
+
+                // Vérifier si le message contient une image
+                const imageMatch = messageContent.match(/\[IMAGE\](.+)/);
+                if (imageMatch) {
+                    imageUrl = imageMatch[1];
+                    messageContent = messageContent.replace(/\[IMAGE\].+/, '').trim();
+                }
+            } else {
+                // Message sans pseudo (format de repli)
+                messageContent = event.data.replace(/^\[[^\]]+\]\s*/, '');
+                // Vérifier si c'est une image seule
+                const imageMatch = messageContent.match(/^\[IMAGE\](.+)/);
+                if (imageMatch) {
+                    imageUrl = imageMatch[1];
+                    messageContent = '';
+                }
+            }
+
             const messageDiv = document.createElement('div');
-            
-            // Vérifier si c'est notre propre message
-            if (lastSentMessage && messageContent === lastSentMessage) {
+
+            // Vérifier si c'est notre propre message ou image
+            const isOwnMessage = lastSentMessage && (
+                messageContent === lastSentMessage || // Message texte
+                imageUrl === lastSentMessage || // Image seule
+                (messageContent && messageContent.includes(lastSentMessage)) // Message avec image
+            );
+
+            if (isOwnMessage) {
                 // C'est notre message, afficher avec le style spécial
                 messageDiv.className = 'message own-message';
                 lastSentMessage = null; // Réinitialiser après utilisation
@@ -64,13 +101,51 @@
                 // Message d'un autre utilisateur, style normal
                 messageDiv.className = 'message';
             }
-            
+
             // Stocker le texte complet pour la fonction de bascule
             messageDiv.dataset.fullText = event.data;
-            
-            // Afficher le message avec ou sans horodatage selon la préférence
-            const displayText = showTimestamps ? event.data : messageContent;
-            messageDiv.textContent = displayText;
+
+            // Fonction pour créer le contenu du message
+            function createMessageContent() {
+                let content = '';
+
+                // Ajouter le pseudo si disponible
+                if (username && userColor) {
+                    if (showTimestamps) {
+                        // Avec timestamp, utiliser le format complet
+                        const timestampMatch = event.data.match(/^\[([^\]]+)\]/);
+                        if (timestampMatch) {
+                            content = `[${timestampMatch[1]}] <span style="color: ${userColor}">${username}</span>: `;
+                        }
+                    } else {
+                        // Sans timestamp, juste le pseudo
+                        content = `<span style="color: ${userColor}">${username}</span>: `;
+                    }
+                }
+
+                // Ajouter le message texte s'il y en a un
+                if (messageContent) {
+                    content += messageContent;
+                }
+
+                // Ajouter l'image si elle existe
+                if (imageUrl) {
+                    if (content) content += '<br>';
+                    content += `<img src="${imageUrl}" alt="Image partagée" style="max-width: 300px; max-height: 200px; border-radius: 8px; margin-top: 5px;" onload="this.style.display='block'" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" /><span style="display: none; color: #999; font-size: 12px;">[Image non disponible]</span>`;
+                }
+
+                return content;
+            }
+
+            // Afficher le message
+            messageContent = createMessageContent();
+            if (messageContent) {
+                messageDiv.innerHTML = messageContent;
+            } else if (imageUrl) {
+                // Cas spécial : seulement une image
+                messageDiv.innerHTML = `<img src="${imageUrl}" alt="Image partagée" style="max-width: 300px; max-height: 200px; border-radius: 8px;" onload="this.style.display='block'" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" /><span style="display: none; color: #999; font-size: 12px;">[Image non disponible]</span>`;
+            }
+
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         };
@@ -89,16 +164,56 @@
             statusDiv.style.backgroundColor = '#f8d7da';
         };
 
-        // Fonction pour envoyer un message
+        // Fonction pour demander l'URL d'une image
+        function requestImageUrl() {
+            const imageUrl = prompt('Collez l\'URL de l\'image à partager :');
+            if (imageUrl && imageUrl.trim()) {
+                pendingImageUrl = imageUrl.trim();
+                // Mettre à jour le placeholder pour indiquer qu'une image est prête
+                messageInput.placeholder = 'Tapez un message ou appuyez sur Entrée pour envoyer l\'image...';
+                messageInput.focus();
+                return true;
+            }
+            return false;
+        }
+
+        // Fonction pour envoyer un message ou une image
         function sendMessage() {
             const message = messageInput.value.trim();
+
+            // Si on a une image en attente et pas de message, envoyer l'image
+            if (pendingImageUrl && !message) {
+                if (ws.readyState === WebSocket.OPEN) {
+                    // Stocker l'URL de l'image pour l'identifier
+                    lastSentMessage = pendingImageUrl;
+
+                    // Envoyer l'image via WebSocket (format spécial)
+                    const imageMessage = `[IMAGE]${pendingImageUrl}`;
+                    ws.send(imageMessage);
+
+                    // Réinitialiser
+                    pendingImageUrl = null;
+                    messageInput.placeholder = 'Tapez votre message ici...';
+                    messageInput.focus();
+                }
+                return;
+            }
+
+            // Si on a un message normal
             if (message && ws.readyState === WebSocket.OPEN) {
+                // Si on a aussi une image en attente, l'inclure dans le message
+                const finalMessage = pendingImageUrl ? `${message}\n[IMAGE]${pendingImageUrl}` : message;
+
                 // Stocker le message pour pouvoir l'identifier quand il reviendra du serveur
                 lastSentMessage = message;
-                
+
                 // Envoyer le message via WebSocket
-                ws.send(message);
+                ws.send(finalMessage);
+
+                // Réinitialiser
+                pendingImageUrl = null;
                 messageInput.value = '';
+                messageInput.placeholder = 'Tapez votre message ici...';
                 messageInput.focus();
             }
         }
@@ -107,25 +222,68 @@
         function toggleTimestamps() {
             showTimestamps = !showTimestamps;
             timestampToggle.textContent = showTimestamps ? 'Désactiver horodatage' : 'Activer horodatage';
-            
+
             // Mettre à jour tous les messages existants
             const existingMessages = messagesDiv.querySelectorAll('.message');
             existingMessages.forEach(messageDiv => {
-                const fullText = messageDiv.dataset.fullText || messageDiv.textContent;
-                const messageContent = fullText.replace(/^\[[^\]]+\]\s*/, '');
-                
+                const fullText = messageDiv.dataset.fullText || messageDiv.innerHTML || messageDiv.textContent;
+
                 // Stocker le texte complet si ce n'est pas déjà fait
                 if (!messageDiv.dataset.fullText) {
                     messageDiv.dataset.fullText = fullText;
                 }
-                
-                // Afficher avec ou sans horodatage
-                messageDiv.textContent = showTimestamps ? fullText : messageContent;
+
+                // Gérer les messages avec ou sans image
+                function updateMessageDisplay() {
+                    const messageMatch = fullText.match(/^\[([^\]]+)\]\s*<span[^>]+style="color:\s*([^"]+)"[^>]*>([^<]+)<\/span>:\s*(.+)$/);
+                    var content = '';
+
+                    if (messageMatch) {
+                        const timestamp = messageMatch[1];
+                        const userColor = messageMatch[2];
+                        const username = messageMatch[3];
+                        var messageContent = messageMatch[4];
+
+                        // Vérifier si le message contient une image
+                        const imageMatch = messageContent.match(/\[IMAGE\](.+)/);
+                        var imageUrl = null;
+                        if (imageMatch) {
+                            imageUrl = imageMatch[1];
+                            messageContent = messageContent.replace(/\[IMAGE\].+/, '').trim();
+                        }
+
+                        // Construire le contenu selon les préférences
+                        if (showTimestamps) {
+                            content = `[${timestamp}] <span style="color: ${userColor}">${username}</span>: `;
+                        } else {
+                            content = `<span style="color: ${userColor}">${username}</span>: `;
+                        }
+
+                        if (messageContent) {
+                            content += messageContent;
+                        }
+
+                        if (imageUrl) {
+                            if (content) content += '<br>';
+                            content += `<img src="${imageUrl}" alt="Image partagée" style="max-width: 300px; max-height: 200px; border-radius: 8px; margin-top: 5px;" onload="this.style.display='block'" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" /><span style="display: none; color: #999; font-size: 12px;">[Image non disponible]</span>`;
+                        }
+                    } else {
+                        // Format de repli pour les anciens messages
+                        content = showTimestamps ? fullText : fullText.replace(/^\[[^\]]+\]\s*/, '');
+                    }
+
+                    messageDiv.innerHTML = content;
+                }
+
+                updateMessageDisplay();
             });
         }
 
         // Gestionnaire d'événement pour le bouton d'envoi
         sendButton.addEventListener('click', sendMessage);
+
+        // Gestionnaire d'événement pour le bouton image
+        imageButton.addEventListener('click', requestImageUrl);
 
         // Gestionnaire d'événement pour le bouton de bascule d'horodatage
         timestampToggle.addEventListener('click', toggleTimestamps);
