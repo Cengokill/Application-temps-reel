@@ -2,6 +2,8 @@
 
 Ce projet implémente un système de suivi du statut d'une tâche utilisant la technique du Long Polling pour les mises à jour en temps réel.
 
+<img width="769" height="600" alt="Capture d’écran 2025-09-11 à 17 00 56" src="https://github.com/user-attachments/assets/ec73730d-76d5-4c39-8175-e38095c6c661" />
+
 ## Architecture
 
 ### Backend (Node.js + Express)
