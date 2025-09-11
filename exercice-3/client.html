@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat WebSocket</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="window">
+        <div class="window-title">💬 Chat WebSocket - Windows 98 Style</div>
+        <div class="window-content">
+            <h1>Chat WebSocket</h1>
+
+            <div id="status">Connexion en cours...</div>
+
+            <div id="messages"></div>
+
+            <div class="input-container">
+                <input type="text" id="messageInput" placeholder="Tapez votre message ici..." />
+                <button id="sendButton">Envoyer</button>
+                <button id="timestampToggle">Désactiver horodatage</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Connexion au serveur WebSocket
+        const ws = new WebSocket('ws://localhost:8080');
+
+        // Éléments du DOM
+        const statusDiv = document.getElementById('status');
+        const messagesDiv = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const timestampToggle = document.getElementById('timestampToggle');
+
+        // Variables de configuration
+        let lastSentMessage = null;
+        let showTimestamps = true;
+
+        // Gestionnaire d'événement pour la connexion établie
+        ws.onopen = function(event) {
+            console.log('Connexion WebSocket établie');
+            statusDiv.textContent = 'Connecté au serveur';
+            statusDiv.style.backgroundColor = '#d4edda';
+        };
+
+        // Gestionnaire d'événement pour les messages reçus
+        ws.onmessage = function(event) {
+            console.log('Message reçu:', event.data);
+
+            // Extraire le message sans le timestamp pour la comparaison
+            const messageContent = event.data.replace(/^\[[^\]]+\]\s*/, '');
+            
+            const messageDiv = document.createElement('div');
+            
+            // Vérifier si c'est notre propre message
+            if (lastSentMessage && messageContent === lastSentMessage) {
+                // C'est notre message, afficher avec le style spécial
+                messageDiv.className = 'message own-message';
+                lastSentMessage = null; // Réinitialiser après utilisation
+            } else {
+                // Message d'un autre utilisateur, style normal
+                messageDiv.className = 'message';
+            }
+            
+            // Stocker le texte complet pour la fonction de bascule
+            messageDiv.dataset.fullText = event.data;
+            
+            // Afficher le message avec ou sans horodatage selon la préférence
+            const displayText = showTimestamps ? event.data : messageContent;
+            messageDiv.textContent = displayText;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        };
+
+        // Gestionnaire d'événement pour les erreurs
+        ws.onerror = function(error) {
+            console.error('Erreur WebSocket:', error);
+            statusDiv.textContent = 'Erreur de connexion';
+            statusDiv.style.backgroundColor = '#f8d7da';
+        };
+
+        // Gestionnaire d'événement pour la fermeture de connexion
+        ws.onclose = function(event) {
+            console.log('Connexion WebSocket fermée');
+            statusDiv.textContent = 'Déconnecté du serveur';
+            statusDiv.style.backgroundColor = '#f8d7da';
+        };
+
+        // Fonction pour envoyer un message
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message && ws.readyState === WebSocket.OPEN) {
+                // Stocker le message pour pouvoir l'identifier quand il reviendra du serveur
+                lastSentMessage = message;
+                
+                // Envoyer le message via WebSocket
+                ws.send(message);
+                messageInput.value = '';
+                messageInput.focus();
+            }
+        }
+
+        // Fonction pour basculer l'affichage des horodatages
+        function toggleTimestamps() {
+            showTimestamps = !showTimestamps;
+            timestampToggle.textContent = showTimestamps ? 'Désactiver horodatage' : 'Activer horodatage';
+            
+            // Mettre à jour tous les messages existants
+            const existingMessages = messagesDiv.querySelectorAll('.message');
+            existingMessages.forEach(messageDiv => {
+                const fullText = messageDiv.dataset.fullText || messageDiv.textContent;
+                const messageContent = fullText.replace(/^\[[^\]]+\]\s*/, '');
+                
+                // Stocker le texte complet si ce n'est pas déjà fait
+                if (!messageDiv.dataset.fullText) {
+                    messageDiv.dataset.fullText = fullText;
+                }
+                
+                // Afficher avec ou sans horodatage
+                messageDiv.textContent = showTimestamps ? fullText : messageContent;
+            });
+        }
+
+        // Gestionnaire d'événement pour le bouton d'envoi
+        sendButton.addEventListener('click', sendMessage);
+
+        // Gestionnaire d'événement pour le bouton de bascule d'horodatage
+        timestampToggle.addEventListener('click', toggleTimestamps);
+
+        // Gestionnaire d'événement pour la touche Entrée dans le champ de saisie
+        messageInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>

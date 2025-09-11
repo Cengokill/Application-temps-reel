@@ -1,0 +1,228 @@
+/* Style Windows 98 - Années 2000 */
+body {
+    font-family: 'MS Sans Serif', 'Lucida Grande', sans-serif;
+    background-color: #008080; /* Teal background */
+    color: #000000;
+    margin: 0;
+    padding: 20px;
+    background-image: linear-gradient(45deg, #008080 25%, transparent 25%),
+                      linear-gradient(-45deg, #008080 25%, transparent 25%),
+                      linear-gradient(45deg, transparent 75%, #008080 75%),
+                      linear-gradient(-45deg, transparent 75%, #008080 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+.window {
+    background-color: #C0C0C0;
+    border: 2px outset #C0C0C0;
+    box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #808080;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0;
+}
+
+.window-title {
+    background: linear-gradient(to right, #000080, #008080);
+    color: white;
+    padding: 4px 8px;
+    font-weight: bold;
+    border-bottom: 1px solid #808080;
+    text-align: center;
+}
+
+.window-content {
+    padding: 20px;
+    background-color: #C0C0C0;
+}
+
+h1 {
+    font-size: 24px;
+    margin: 0 0 15px 0;
+    color: #000080;
+    text-align: center;
+    font-weight: bold;
+    text-shadow: 1px 1px 0px #FFFFFF;
+}
+
+#status {
+    background-color: #FFFFE0;
+    border: 2px inset #C0C0C0;
+    padding: 8px 12px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    color: #000000;
+    text-align: center;
+    box-shadow: inset 2px 2px 4px #808080;
+}
+
+#messages {
+    width: 100%;
+    height: 300px;
+    border: 2px inset #C0C0C0;
+    padding: 10px;
+    margin-bottom: 15px;
+    overflow-y: auto;
+    background-color: #FFFFFF;
+    box-shadow: inset 2px 2px 4px #808080;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+}
+
+#messageInput {
+    width: 65%;
+    padding: 6px 8px;
+    border: 2px inset #C0C0C0;
+    background-color: #FFFFFF;
+    font-family: 'MS Sans Serif', sans-serif;
+    font-size: 12px;
+    box-shadow: inset 1px 1px 2px #808080;
+    margin-right: 10px;
+}
+
+button {
+    /* Dimensions exactes Windows 98 */
+    min-height: 23px;
+    min-width: 75px;
+    padding: 3px 12px;
+
+    /* Fond avec dégradé subtil */
+    background: linear-gradient(to bottom,
+        #FFFFFF 0%,
+        #E0E0E0 25%,
+        #D0D0D0 50%,
+        #C0C0C0 75%,
+        #B0B0B0 100%
+    );
+
+    /* Bordures multiples pour effet 3D authentique */
+    border-top: 1px solid #FFFFFF;
+    border-left: 1px solid #FFFFFF;
+    border-right: 1px solid #808080;
+    border-bottom: 1px solid #808080;
+    outline: 1px solid #000000;
+
+    /* Police authentique */
+    font-family: 'MS Sans Serif', 'Lucida Grande', sans-serif;
+    font-size: 11px;
+    font-weight: normal;
+    text-align: center;
+
+    /* Positionnement du texte */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+    color: #000000;
+
+    /* Effet de relief subtil */
+    box-shadow:
+        1px 1px 0px #404040,
+        inset 0 0 0 1px #FFFFFF;
+}
+
+button:hover {
+    /* Changement subtil au survol */
+    background: linear-gradient(to bottom,
+        #FFFFFF 0%,
+        #F0F0F0 25%,
+        #E0E0E0 50%,
+        #D0D0D0 75%,
+        #C0C0C0 100%
+    );
+}
+
+button:active {
+    /* Effet enfoncé authentique */
+    background: linear-gradient(to bottom,
+        #A0A0A0 0%,
+        #B0B0B0 25%,
+        #C0C0C0 50%,
+        #D0D0D0 75%,
+        #E0E0E0 100%
+    );
+
+    /* Inversion des bordures pour l'effet enfoncé */
+    border-top: 1px solid #808080;
+    border-left: 1px solid #808080;
+    border-right: 1px solid #FFFFFF;
+    border-bottom: 1px solid #FFFFFF;
+
+    /* Ombre inversée */
+    box-shadow:
+        inset 1px 1px 0px #404040,
+        0 0 0 1px #000000;
+
+    /* Déplacement du texte pour effet 3D */
+    transform: translate(1px, 1px);
+}
+
+button:focus {
+    /* Suppression de l'outline par défaut */
+    outline: none;
+}
+
+.message {
+    margin-bottom: 8px;
+    padding: 6px 8px;
+    background-color: #FFFFFF;
+    border: 1px solid #808080;
+    border-radius: 0;
+    font-family: 'MS Sans Serif', sans-serif;
+    font-size: 12px;
+    box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #808080;
+    word-wrap: break-word;
+}
+
+/* Style spécial pour les messages de l'utilisateur courant */
+.message.own-message {
+    color: #000080; /* Bleu Windows 98 */
+    font-weight: bold;
+    background-color: #E6F3FF; /* Bleu très clair */
+    border: 1px solid #000080;
+    text-align: right; /* Alignement à droite */
+}
+
+.input-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#timestampToggle {
+    min-width: 120px;
+    font-size: 10px;
+    padding: 4px 8px;
+    background: linear-gradient(to bottom,
+        #FFFFCC 0%,
+        #FFFF99 25%,
+        #FFFF66 50%,
+        #FFFF33 75%,
+        #FFFF00 100%
+    );
+}
+
+/* Scrollbar style pour ressembler à Windows 98 */
+::-webkit-scrollbar {
+    width: 16px;
+}
+
+::-webkit-scrollbar-track {
+    background: #C0C0C0;
+    border: 2px inset #C0C0C0;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #C0C0C0;
+    border: 2px outset #C0C0C0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #A0A0A0;
+}
+
+::-webkit-scrollbar-corner {
+    background: #C0C0C0;
+}
