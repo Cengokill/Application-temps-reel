@@ -1,0 +1,24 @@
+{
+  "name": "dashboard-collaboratif",
+  "version": "1.0.0",
+  "description": "Application de tableau de bord collaboratif en temps réel",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "collaboratif",
+    "temps-reel",
+    "socket.io",
+    "express"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "socket.io": "^4.7.4"
+  }
+}

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Collaboratif</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Notes Collaboratives</h1>
+            <p class="subtitle">Créer, modifier et supprimer des notes en temps réel</p>
+            <div id="auth-status" class="auth-status">
+                <span id="user-info" style="display: none;">
+                    Connecté en tant que : <strong id="current-username"></strong>
+                    <button id="logout-btn" class="btn btn-secondary btn-large">Déconnexion</button>
+                </span>
+                <span id="login-prompt">
+                    <button id="show-login-btn" class="btn btn-primary btn-large">Connexion</button>
+                    <button id="show-register-btn" class="btn btn-secondary btn-large">Inscription</button>
+                </span>
+            </div>
+        </header>
+
+        <!-- Modales d'authentification - Style Windows 98 -->
+        <div id="login-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Connexion</h2>
+                    <button class="modal-close">×</button>
+                </div>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-username">Nom d'utilisateur :</label>
+                        <input type="text" id="login-username" required minlength="3">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Mot de passe :</label>
+                        <input type="password" id="login-password" required minlength="6">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-large">OK</button>
+                        <button type="button" class="btn btn-secondary btn-large modal-close">Annuler</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="register-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Inscription</h2>
+                    <button class="modal-close">×</button>
+                </div>
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="register-username">Nom d'utilisateur :</label>
+                        <input type="text" id="register-username" required minlength="3">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Mot de passe :</label>
+                        <input type="password" id="register-password" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm-password">Confirmer :</label>
+                        <input type="password" id="register-confirm-password" required minlength="6">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-large">OK</button>
+                        <button type="button" class="btn btn-secondary btn-large modal-close">Annuler</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="add-note-section" id="add-note-section" style="display: none;">
+            <div class="add-note-form">
+                <textarea
+                    id="new-note-content"
+                    placeholder="Tapez votre note ici..."
+                    maxlength="500"
+                    rows="3"
+                ></textarea>
+                <button id="add-note-btn" class="btn btn-primary btn-xlarge">
+                    Ajouter une note
+                </button>
+            </div>
+        </div>
+
+        <div class="notes-section">
+            <div class="notes-header">
+                <h2>Notes ({<span id="notes-count">0</span>})</h2>
+                <div class="notes-controls">
+                    <button id="refresh-btn" class="btn btn-secondary btn-large">
+                        Actualiser
+                    </button>
+                </div>
+            </div>
+
+            <div id="notes-container" class="notes-grid">
+                <!-- Les notes seront affichées ici dynamiquement -->
+            </div>
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Chargement en cours...</p>
+        </div>
+
+        <div id="error-message" class="error-message" style="display: none;">
+            <!-- Les messages d'erreur seront affichés ici -->
+        </div>
+    </div>
+
+    <!-- Templates pour les notes - Style Windows 98 -->
+    <template id="note-template">
+        <div class="note" data-note-id="">
+            <div class="note-header">
+                <div class="note-meta">
+                    <span class="note-author">Par: <span class="author-name">Anonyme</span></span>
+                    <span class="note-date"></span>
+                </div>
+                <div class="note-actions">
+                    <button class="btn-edit" title="Modifier">Modifier</button>
+                    <button class="btn-delete" title="Supprimer">Supprimer</button>
+                </div>
+            </div>
+            <div class="note-content"></div>
+        </div>
+    </template>
+
+    <template id="edit-note-template">
+        <div class="edit-note-form">
+            <textarea class="edit-content" maxlength="500" rows="4"></textarea>
+            <div class="edit-actions">
+                <button class="btn-save btn-large">OK</button>
+                <button class="btn-cancel btn-large">Annuler</button>
+            </div>
+        </div>
+    </template>
+
+    <!-- Scripts -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
