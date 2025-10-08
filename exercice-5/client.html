@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Socket.io</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="loginSection">
+        <h2>Rejoindre le Chat</h2>
+        <input type="text" id="usernameInput" placeholder="Entrez votre pseudonyme..." maxlength="20">
+        
+        <div class="room-selection">
+            <h3>Choisissez une room :</h3>
+            <div class="room-options">
+                <label class="room-option">
+                    <input type="radio" name="room" value="general" checked>
+                    <span class="room-name">💬 Général</span>
+                    <span class="room-desc">Discussion générale</span>
+                </label>
+                <label class="room-option">
+                    <input type="radio" name="room" value="tech">
+                    <span class="room-name">💻 Tech</span>
+                    <span class="room-desc">Discussions techniques</span>
+                </label>
+            </div>
+        </div>
+        
+        <button id="connectButton">Se connecter</button>
+    </div>
+    <div id="chatSection" style="display: none;">
+        <div class="chat-layout">
+            <div id="usersList">
+                <h3>Utilisateurs connectés</h3>
+                <ul id="usersListItems"></ul>
+                <div id="roomInfo">
+                    <p><strong>Room actuelle:</strong> <span id="currentRoomDisplay">-</span></p>
+                    <p><strong>Commandes:</strong></p>
+                    <ul style="font-size: 12px; margin: 5px 0;">
+                        <li><code>/room &lt;nom&gt;</code> - Changer de room</li>
+                    </ul>
+                </div>
+            </div>
+            <div id="chatContainer">
+                <div id="messages"></div>
+                <div id="inputContainer">
+                    <input type="text" id="messageInput" placeholder="Tapez votre message ici... (ou /room &lt;nom&gt; pour changer de room)">
+                    <button id="sendButton">Envoyer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script src="scriptClient.js"></script>
+</body>
+</html>

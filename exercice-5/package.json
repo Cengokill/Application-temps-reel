@@ -1,0 +1,15 @@
+{
+  "name": "chat-temps-reel-exercice-4",
+  "version": "1.0.0",
+  "description": "Application de chat en temps réel avec Socket.IO",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test-connection.js"
+  },
+  "dependencies": {
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "ioredis": "^5.4.1"
+  }
+}
