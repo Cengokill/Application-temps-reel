@@ -1,0 +1,23 @@
+{
+  "name": "editeur-collaboratif-server",
+  "version": "1.0.0",
+  "description": "Serveur pour éditeur de texte collaboratif temps réel",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.8.1",
+    "@socket.io/redis-adapter": "^8.2.1",
+    "redis": "^4.6.12",
+    "validator": "^13.11.0",
+    "cors": "^2.8.5",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

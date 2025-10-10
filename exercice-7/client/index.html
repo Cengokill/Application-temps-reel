@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Éditeur Collaboratif Temps Réel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="loginSection">
+        <div class="login-container">
+            <h1>📝 Éditeur Collaboratif</h1>
+            <p class="subtitle">Écrivez ensemble en temps réel</p>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="usernameInput">Pseudonyme</label>
+                    <input type="text" id="usernameInput" placeholder="Votre nom..." maxlength="20" required>
+                    <small>2-20 caractères</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tokenInput">Token d'accès</label>
+                    <input type="text" id="tokenInput" placeholder="Token..." required>
+                    <small>Clé partagée pour rejoindre</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Espace de travail</label>
+                    <div class="room-selection">
+                        <div class="room-card" data-room="general">
+                            <div class="room-icon">💬</div>
+                            <div class="room-info">
+                                <div class="room-name">Général</div>
+                                <div class="room-desc">Discussion libre</div>
+                            </div>
+                            <div class="room-status">
+                                <div class="room-users">0</div>
+                                <div class="room-indicator"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="room-card" data-room="tech">
+                            <div class="room-icon">💻</div>
+                            <div class="room-info">
+                                <div class="room-name">Tech</div>
+                                <div class="room-desc">Technologies & Code</div>
+                            </div>
+                            <div class="room-status">
+                                <div class="room-users">0</div>
+                                <div class="room-indicator"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="room-card" data-room="projet">
+                            <div class="room-icon">🚀</div>
+                            <div class="room-info">
+                                <div class="room-name">Projet</div>
+                                <div class="room-desc">Collaboration projet</div>
+                            </div>
+                            <div class="room-status">
+                                <div class="room-users">0</div>
+                                <div class="room-indicator"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="room-card" data-room="notes">
+                            <div class="room-icon">📝</div>
+                            <div class="room-info">
+                                <div class="room-name">Notes</div>
+                                <div class="room-desc">Prise de notes</div>
+                            </div>
+                            <div class="room-status">
+                                <div class="room-users">0</div>
+                                <div class="room-indicator"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="roomSelect" required>
+                </div>
+                
+                <button type="submit" id="connectButton">Rejoindre</button>
+            </form>
+            
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+        </div>
+    </div>
+    
+    <div id="editorSection" style="display: none;">
+        <header class="app-header">
+            <div class="header-left">
+                <h2>📝 Éditeur Collaboratif</h2>
+                <span class="room-info">Room: <strong id="currentRoom">-</strong></span>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <button id="toggleThemeButton" class="btn-toggle-theme" title="Basculer le thème">
+                        🌙 Mode sombre
+                    </button>
+                    <span class="username-display" id="currentUsername">-</span>
+                    <button id="disconnectButton" class="btn-disconnect">Déconnexion</button>
+                </div>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="users-panel">
+                    <h3>👥 Utilisateurs connectés</h3>
+                    <div id="usersList" class="users-list"></div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-label">Actifs:</span>
+                            <span id="activeUsersCount">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Caractères:</span>
+                            <span id="charCount">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="editor-container">
+                <div class="editor-header">
+                    <h3>📄 Document collaboratif</h3>
+                    <div class="editor-stats">
+                        <span id="editorCharCount">0</span> caractères
+                        <span id="editorActiveUsers">0</span> utilisateurs actifs
+                    </div>
+                </div>
+                
+                <div class="editor-wrapper">
+                    <textarea 
+                        id="collaborativeEditor" 
+                        placeholder="Commencez à écrire... Les modifications sont synchronisées en temps réel avec les autres utilisateurs de la room."
+                        maxlength="50000"
+                    ></textarea>
+                    <div id="cursorsOverlay" class="cursors-overlay"></div>
+                </div>
+                
+                <div class="notifications" id="notifications"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.5/dist/purify.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
