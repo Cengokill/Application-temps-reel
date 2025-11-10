@@ -1,0 +1,927 @@
+/**
+ * Tableau de Bord Collaboratif - Styles CSS
+ * Design inspiré de Discord - Thème sombre moderne
+ */
+
+/* ============================================
+   VARIABLES CSS - DISCORD THEME
+   ============================================ */
+:root {
+    /* Couleurs Discord */
+    --discord-blurple: #5865F2;
+    --discord-blurple-hover: #4752C4;
+    --discord-green: #3BA55D;
+    --discord-green-hover: #2D7D46;
+    --discord-red: #ED4245;
+    --discord-red-hover: #C03537;
+    --discord-yellow: #FAA81A;
+    
+    /* Backgrounds Discord */
+    --bg-primary: #36393f;
+    --bg-secondary: #2f3136;
+    --bg-tertiary: #202225;
+    --bg-floating: #18191c;
+    --bg-modifier-hover: rgba(79, 84, 92, 0.16);
+    --bg-modifier-active: rgba(79, 84, 92, 0.24);
+    --bg-modifier-selected: rgba(79, 84, 92, 0.32);
+    
+    /* Text Colors Discord */
+    --text-normal: #dcddde;
+    --text-muted: #96989d;
+    --text-link: #00b0f4;
+    --text-positive: #3ba55d;
+    --text-warning: #faa81a;
+    --text-danger: #ed4245;
+    
+    /* Interactive Colors */
+    --interactive-normal: #b9bbbe;
+    --interactive-hover: #dcddde;
+    --interactive-active: #fff;
+    --interactive-muted: #4f5660;
+    
+    /* Borders & Shadows */
+    --border-color: #202225;
+    --shadow-sm: 0 1px 0 rgba(4, 4, 5, 0.2), 0 1.5px 0 rgba(6, 6, 7, 0.05), 0 2px 0 rgba(4, 4, 5, 0.05);
+    --shadow-md: 0 2px 10px 0 rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.24);
+    --shadow-xl: 0 2px 10px 0 rgba(0, 0, 0, 0.2);
+    
+    /* Discord Radius */
+    --radius: 4px;
+    --radius-lg: 8px;
+    --transition: all 0.15s ease;
+}
+
+/* ============================================
+   RESET & BASE - DISCORD STYLE
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: var(--bg-tertiary);
+    min-height: 100vh;
+    color: var(--text-normal);
+    line-height: 1.375;
+    font-size: 16px;
+}
+
+/* ============================================
+   PAGE D'AUTHENTIFICATION - DISCORD STYLE
+   ============================================ */
+.auth-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: var(--bg-tertiary);
+}
+
+.auth-container {
+    background: var(--bg-primary);
+    border-radius: 5px;
+    box-shadow: var(--shadow-xl);
+    padding: 2rem;
+    width: 100%;
+    max-width: 480px;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-normal);
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 16px;
+    text-align: center;
+    font-weight: 400;
+}
+
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.auth-form h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: var(--text-normal);
+    font-weight: 600;
+    text-align: center;
+}
+
+.auth-switch {
+    text-align: left;
+    margin-top: 4px;
+}
+
+.auth-switch p {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.auth-switch a {
+    color: var(--text-link);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.auth-footer p {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+/* ============================================
+   PAGE APPLICATION - DISCORD STYLE
+   ============================================ */
+.app-page {
+    background: var(--bg-tertiary);
+    min-height: 100vh;
+}
+
+.app-header {
+    background: var(--bg-secondary);
+    box-shadow: 0 1px 0 rgba(4, 4, 5, 0.2), 0 1.5px 0 rgba(6, 6, 7, 0.05), 0 2px 0 rgba(4, 4, 5, 0.05);
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    height: 60px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.app-header h1 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-normal);
+}
+
+.connection-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--interactive-muted);
+    animation: pulse 2s infinite;
+}
+
+.status-dot.connected {
+    background: var(--discord-green);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-info {
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.user-info strong {
+    color: var(--text-normal);
+    font-weight: 500;
+}
+
+.app-main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ============================================
+   FORMULAIRES - DISCORD STYLE
+   ============================================ */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--bg-tertiary);
+    border-radius: 3px;
+    font-size: 16px;
+    font-family: inherit;
+    transition: var(--transition);
+    background: var(--bg-tertiary);
+    color: var(--text-normal);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--discord-blurple);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-hint {
+    display: block;
+    margin-top: 4px;
+    font-size: 14px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.char-counter {
+    text-align: right;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 8px;
+}
+
+/* ============================================
+   BOUTONS - DISCORD STYLE
+   ============================================ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 3px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+    height: 44px;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: var(--discord-blurple);
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--discord-blurple-hover);
+}
+
+.btn-secondary {
+    background: var(--interactive-muted);
+    color: var(--text-normal);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #5d6269;
+}
+
+.btn-danger {
+    background: var(--discord-red);
+    color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: var(--discord-red-hover);
+}
+
+.btn-loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ============================================
+   MESSAGES - DISCORD STYLE
+   ============================================ */
+.message-container {
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    animation: slideDown 0.2s ease;
+    border-left: 4px solid;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message-container.error {
+    background: rgba(237, 66, 69, 0.1);
+    color: var(--text-danger);
+    border-left-color: var(--discord-red);
+}
+
+.message-container.success {
+    background: rgba(59, 165, 93, 0.1);
+    color: var(--text-positive);
+    border-left-color: var(--discord-green);
+}
+
+.message-container.info {
+    background: rgba(88, 101, 242, 0.1);
+    color: var(--discord-blurple);
+    border-left-color: var(--discord-blurple);
+}
+
+/* ============================================
+   SECTION D'AJOUT DE NOTE - DISCORD STYLE
+   ============================================ */
+.add-note-section {
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 16px;
+}
+
+.add-note-section h2 {
+    font-size: 20px;
+    margin-bottom: 16px;
+    color: var(--text-normal);
+    font-weight: 600;
+}
+
+/* ============================================
+   STATISTIQUES - DISCORD STYLE
+   ============================================ */
+.stats-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.stat-card {
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: var(--transition);
+    border: 1px solid var(--bg-tertiary);
+}
+
+.stat-card:hover {
+    border-color: var(--interactive-muted);
+    background: var(--bg-modifier-hover);
+}
+
+.stat-icon {
+    font-size: 32px;
+    opacity: 0.9;
+}
+
+.stat-info {
+    flex: 1;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-normal);
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================
+   SECTION DES NOTES - DISCORD STYLE
+   ============================================ */
+.notes-section {
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+}
+
+.notes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.notes-header h2 {
+    font-size: 20px;
+    color: var(--text-normal);
+    font-weight: 600;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.filter-btn {
+    padding: 6px 12px;
+    border: none;
+    background: var(--bg-tertiary);
+    border-radius: 3px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--text-muted);
+}
+
+.filter-btn:hover {
+    background: var(--bg-modifier-hover);
+    color: var(--text-normal);
+}
+
+.filter-btn.active {
+    background: var(--discord-blurple);
+    color: white;
+}
+
+/* ============================================
+   GRILLE DE NOTES - DISCORD CARD STYLE
+   ============================================ */
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    padding: 8px 0;
+}
+
+.note-card {
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 0 rgba(4, 4, 5, 0.2), 0 1.5px 0 rgba(6, 6, 7, 0.05), 0 2px 0 rgba(4, 4, 5, 0.05);
+    transition: all 0.15s ease;
+    position: relative;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    cursor: default;
+    border: 1px solid var(--bg-tertiary);
+}
+
+.note-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.24);
+    border-color: var(--bg-floating);
+}
+
+.note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--bg-secondary);
+}
+
+.note-author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #000000;
+}
+
+.author-icon {
+    font-size: 16px;
+}
+
+.note-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.note-btn {
+    background: var(--bg-modifier-hover);
+    border: none;
+    border-radius: 3px;
+    padding: 4px 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.note-btn:hover {
+    background: var(--bg-modifier-selected);
+    transform: scale(1.05);
+}
+
+.note-content {
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #000000;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    margin-bottom: 12px;
+}
+
+.note-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--bg-secondary);
+    padding-top: 12px;
+}
+
+.note-date,
+.note-updated {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    grid-column: 1 / -1;
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+}
+
+.empty-state p {
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.empty-hint {
+    font-size: 14px;
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+/* ============================================
+   MODALS - DISCORD STYLE
+   ============================================ */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.modal.active {
+    display: flex;
+    animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+    background: var(--bg-primary);
+    border-radius: 4px;
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: scaleIn 0.2s ease;
+}
+
+.modal-small {
+    max-width: 440px;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: none;
+}
+
+.modal-header h3 {
+    font-size: 20px;
+    color: var(--text-normal);
+    font-weight: 600;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: var(--interactive-normal);
+    cursor: pointer;
+    line-height: 1;
+    transition: var(--transition);
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.modal-close:hover {
+    background: var(--bg-modifier-hover);
+    color: var(--interactive-hover);
+}
+
+.modal-body {
+    padding: 0 16px 16px;
+}
+
+.modal-body p {
+    margin-bottom: 12px;
+    color: var(--text-normal);
+    font-size: 16px;
+}
+
+.warning-text {
+    color: var(--text-danger);
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.modal form {
+    padding: 0 16px 16px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px;
+    background: var(--bg-secondary);
+    border-radius: 0 0 4px 4px;
+}
+
+/* ============================================
+   RESPONSIVE - DISCORD STYLE
+   ============================================ */
+@media (max-width: 768px) {
+    .app-header {
+        padding: 12px;
+        height: auto;
+    }
+
+    .app-header h1 {
+        font-size: 14px;
+    }
+
+    .header-left,
+    .header-right {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .app-main {
+        padding: 12px;
+    }
+
+    .add-note-section,
+    .notes-section {
+        padding: 16px;
+    }
+
+    .notes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-buttons {
+        width: 100%;
+    }
+
+    .filter-btn {
+        flex: 1;
+    }
+
+    .modal-content {
+        max-width: 100%;
+        margin: 12px;
+    }
+
+    .modal-header,
+    .modal form,
+    .modal-actions,
+    .modal-body {
+        padding: 12px;
+    }
+
+    .auth-container {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .modal-actions .btn {
+        width: 100%;
+    }
+
+    .stats-section {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================
+   ANIMATIONS ADDITIONNELLES
+   ============================================ */
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-5px);
+    }
+    75% {
+        transform: translateX(5px);
+    }
+}
+
+.error-shake {
+    animation: shake 0.3s ease;
+}
+
+/* ============================================
+   ACCESSIBILITÉ - DISCORD STYLE
+   ============================================ */
+*:focus {
+    outline: 2px solid var(--discord-blurple);
+    outline-offset: 2px;
+}
+
+button:focus,
+input:focus,
+textarea:focus {
+    outline: 2px solid var(--discord-blurple);
+    outline-offset: 2px;
+}
+
+/* Scrollbar Discord Style */
+::-webkit-scrollbar {
+    width: 16px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-tertiary);
+    border: 4px solid var(--bg-secondary);
+    border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bg-floating);
+}
+
+/* Préférence de mouvement réduit */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+

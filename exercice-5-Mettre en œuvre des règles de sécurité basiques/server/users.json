@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "username": "Cengokill",
+    "password": "$2b$10$JJgWAXwldsWk5iMVBVi7u.W9KQQDyTn/UY2kgeGKsDc0ZKa2Zc1Xy",
+    "createdAt": "2025-11-07T08:37:41.694Z"
+  },
+  {
+    "id": 2,
+    "username": "Bob",
+    "password": "$2b$10$wKHEwkV1ukEXbVAsZ.HU/uPHjogiGxbGcvNgvsV5SbjJcTKHbcF4m",
+    "createdAt": "2025-11-07T08:39:25.254Z"
+  }
+]

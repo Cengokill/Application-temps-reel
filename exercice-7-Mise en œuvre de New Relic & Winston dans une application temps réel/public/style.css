@@ -1,0 +1,635 @@
+/**
+ * Windows XP Theme CSS
+ * Recréation nostalgique du design iconique de Windows XP
+ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Tahoma', 'Trebuchet MS', Arial, sans-serif;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect fill="%235a7fdc" width="100" height="100"/></svg>');
+    background-color: #5a7fdc; /* Bleu Windows XP emblématique */
+    min-height: 100vh;
+    padding: 20px;
+    color: #000;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header style Windows XP */
+header {
+    background: linear-gradient(to bottom, #0054e3 0%, #0e6cdb 50%, #1579ea 100%);
+    border: 2px solid #fff;
+    border-radius: 8px 8px 0 0;
+    padding: 8px 15px;
+    margin-bottom: 5px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 5px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+header h1 {
+    font-size: 1.5rem;
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.subtitle {
+    font-size: 0.9rem;
+    color: #e8f1ff;
+    font-weight: normal;
+}
+
+/* Window buttons XP style */
+.window-controls {
+    display: flex;
+    gap: 2px;
+}
+
+.window-btn {
+    width: 21px;
+    height: 21px;
+    border: 1px solid #fff;
+    border-radius: 3px;
+    background: linear-gradient(to bottom, #f1f7ff 0%, #c8d9f0 100%);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Status Bar - Barre des tâches XP style */
+.status-bar {
+    background: linear-gradient(to bottom, #eef5fb 0%, #d9e9f7 50%, #8fb9dc 100%);
+    border: 1px solid #7198c1;
+    border-radius: 0;
+    padding: 8px 15px;
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 15px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    background: linear-gradient(to bottom, #fff 0%, #e8f1fc 100%);
+    border: 1px solid #9db3ca;
+    border-radius: 3px;
+}
+
+.status-label {
+    font-weight: bold;
+    color: #003c74;
+    font-size: 0.9rem;
+}
+
+.status-value {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #0054e3;
+}
+
+/* Routes Grid - Fenêtres XP style */
+.routes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.route-card {
+    background: linear-gradient(to bottom, #ece9d8 0%, #ded9c7 100%);
+    border: 3px solid;
+    border-color: #f4f2e9 #a19c8c #a19c8c #f4f2e9;
+    padding: 15px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.route-card::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    right: 3px;
+    height: 2px;
+    background: #fff;
+    opacity: 0.8;
+}
+
+.route-header {
+    background: linear-gradient(to right, #0054e3, #348de5);
+    margin: -15px -15px 12px -15px;
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #003c74;
+}
+
+.route-header h3 {
+    font-size: 1.1rem;
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+}
+
+.route-description {
+    color: #000;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    background: #fff;
+    padding: 8px;
+    border: 1px solid #a6a6a6;
+}
+
+/* Badges XP style */
+.badge {
+    padding: 3px 10px;
+    border: 1px solid;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 2px;
+}
+
+.badge-success {
+    background: linear-gradient(to bottom, #c3f7cc 0%, #7dd48e 100%);
+    border-color: #4d9f5c;
+    color: #1a5725;
+}
+
+.badge-warning {
+    background: linear-gradient(to bottom, #ffe7a5 0%, #ffce51 100%);
+    border-color: #d4a036;
+    color: #5c4612;
+}
+
+.badge-error {
+    background: linear-gradient(to bottom, #ffb8b8 0%, #ff6b6b 100%);
+    border-color: #c53030;
+    color: #611717;
+}
+
+.badge-info {
+    background: linear-gradient(to bottom, #b3d9ff 0%, #6ba3d9 100%);
+    border-color: #4a80b5;
+    color: #1a3d5c;
+}
+
+/* Buttons - Style bouton Windows XP classique */
+.btn {
+    width: 100%;
+    padding: 6px 15px;
+    border: 1px solid #003c74;
+    background: linear-gradient(to bottom, #fff 0%, #eceae5 50%, #d6d3ce 100%);
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #000;
+    cursor: pointer;
+    font-family: 'Tahoma', sans-serif;
+    box-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+    border-radius: 3px;
+}
+
+.btn:hover {
+    background: linear-gradient(to bottom, #fff 0%, #fcf9f4 50%, #ece9db 100%);
+    border-color: #0054e3;
+}
+
+.btn:active {
+    background: linear-gradient(to bottom, #d6d3ce 0%, #eceae5 50%, #fff 100%);
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.2);
+    padding: 7px 14px 5px 16px;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: #999;
+}
+
+.btn-primary {
+    background: linear-gradient(to bottom, #eef5fb 0%, #a5c9e8 50%, #6fa7d3 100%);
+    border-color: #003c74;
+    color: #003c74;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(to bottom, #f8fbff 0%, #c0daef 50%, #8fc0e3 100%);
+}
+
+.btn-warning {
+    background: linear-gradient(to bottom, #fff8dc 0%, #ffe17d 50%, #ffd54f 100%);
+    border-color: #c4941f;
+    color: #5c4612;
+}
+
+.btn-error {
+    background: linear-gradient(to bottom, #ffe8e8 0%, #ffb3b3 50%, #ff8787 100%);
+    border-color: #9e3535;
+    color: #611717;
+}
+
+.btn-info {
+    background: linear-gradient(to bottom, #e8f4fd 0%, #b8d9f0 50%, #8fc0e3 100%);
+    border-color: #4a80b5;
+    color: #1a3d5c;
+}
+
+/* Results - Style boîte de dialogue XP */
+.result {
+    margin-top: 12px;
+    padding: 10px;
+    border: 2px solid;
+    font-size: 0.85rem;
+    display: none;
+    animation: fadeIn 0.3s;
+}
+
+.result.show {
+    display: block;
+}
+
+.result.success {
+    background: linear-gradient(to bottom, #f0ffe8 0%, #d7f5c8 100%);
+    border-color: #4d9f5c;
+    color: #1a5725;
+}
+
+.result.error {
+    background: linear-gradient(to bottom, #fff0f0 0%, #ffd5d5 100%);
+    border-color: #c53030;
+    color: #611717;
+}
+
+.result strong {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.result pre {
+    margin-top: 8px;
+    background: #fff;
+    padding: 8px;
+    border: 1px solid #a6a6a6;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    font-family: 'Courier New', monospace;
+}
+
+/* Load Test Section - Style panneau XP */
+.load-test-section {
+    background: linear-gradient(to bottom, #ece9d8 0%, #ded9c7 100%);
+    border: 3px solid;
+    border-color: #f4f2e9 #a19c8c #a19c8c #f4f2e9;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+}
+
+.load-test-section h2 {
+    color: #003c74;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #7198c1;
+}
+
+.load-test-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    margin-bottom: 15px;
+}
+
+.load-test-controls label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-weight: bold;
+    color: #000;
+    font-size: 0.9rem;
+}
+
+.load-test-controls input,
+.load-test-controls select {
+    padding: 4px 6px;
+    border: 1px solid #7f9db9;
+    background: #fff;
+    font-size: 0.9rem;
+    font-family: 'Tahoma', sans-serif;
+    min-width: 120px;
+    box-shadow: inset 1px 1px 1px rgba(0,0,0,0.1);
+}
+
+.load-test-controls input:focus,
+.load-test-controls select:focus {
+    outline: 1px solid #0054e3;
+    outline-offset: 0;
+}
+
+.load-test-controls button {
+    flex: 1;
+    min-width: 150px;
+}
+
+/* Progress Bar - Style barre de progression XP */
+.progress-bar {
+    width: 100%;
+    height: 25px;
+    background: #fff;
+    border: 2px solid;
+    border-color: #848284 #f0eff0 #f0eff0 #848284;
+    overflow: hidden;
+    margin-bottom: 12px;
+    display: none;
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.progress-bar.show {
+    display: block;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3399ff 0%, #0054e3 50%, #3399ff 100%);
+    background-size: 40px 100%;
+    animation: progress-animation 1s linear infinite;
+    width: 0%;
+    transition: width 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+    font-size: 0.85rem;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+}
+
+@keyframes progress-animation {
+    0% { background-position: 0 0; }
+    100% { background-position: 40px 0; }
+}
+
+/* Logs Section - Style console DOS/Windows */
+.logs-section {
+    background: linear-gradient(to bottom, #ece9d8 0%, #ded9c7 100%);
+    border: 3px solid;
+    border-color: #f4f2e9 #a19c8c #a19c8c #f4f2e9;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+}
+
+.logs-section h2 {
+    color: #003c74;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #7198c1;
+}
+
+.logs-container {
+    background: #000;
+    border: 2px solid #848284;
+    padding: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.85rem;
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.log-entry {
+    padding: 5px 0;
+    color: #00ff00; /* Vert terminal classique */
+}
+
+.log-entry:last-child {
+    border-bottom: none;
+}
+
+.log-timestamp {
+    color: #888;
+    font-size: 0.8rem;
+}
+
+.log-level {
+    display: inline-block;
+    padding: 1px 6px;
+    border: 1px solid;
+    font-weight: bold;
+    font-size: 0.75rem;
+    margin: 0 5px;
+}
+
+.log-level.info {
+    background: #00ff00;
+    color: #000;
+    border-color: #00cc00;
+}
+
+.log-level.warn {
+    background: #ffff00;
+    color: #000;
+    border-color: #cccc00;
+}
+
+.log-level.error {
+    background: #ff0000;
+    color: #fff;
+    border-color: #cc0000;
+}
+
+.log-level.debug {
+    background: #00ccff;
+    color: #000;
+    border-color: #0099cc;
+}
+
+.log-message {
+    color: #fff;
+}
+
+.text-muted {
+    color: #666;
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+}
+
+/* Footer - Style pied de page XP */
+footer {
+    background: linear-gradient(to bottom, #ece9d8 0%, #ded9c7 100%);
+    border: 3px solid;
+    border-color: #f4f2e9 #a19c8c #a19c8c #f4f2e9;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+}
+
+footer h3 {
+    color: #003c74;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+}
+
+.links {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.link-btn {
+    display: inline-block;
+    padding: 6px 20px;
+    background: linear-gradient(to bottom, #fff 0%, #d6d3ce 100%);
+    color: #000;
+    text-decoration: none;
+    border: 1px solid #003c74;
+    border-radius: 3px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    box-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+    transition: all 0.1s;
+}
+
+.link-btn:hover {
+    background: linear-gradient(to bottom, #fff 0%, #ece9db 100%);
+    border-color: #0054e3;
+}
+
+.link-btn:active {
+    background: linear-gradient(to bottom, #d6d3ce 0%, #fff 100%);
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.footer-note {
+    color: #000;
+    margin-top: 12px;
+    font-size: 0.85rem;
+}
+
+.footer-note code {
+    background: #fff;
+    padding: 2px 5px;
+    border: 1px solid #a6a6a6;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Loading spinner - Sablier XP style */
+.spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #666;
+    border-radius: 50%;
+    border-top-color: #0054e3;
+    animation: spin 0.8s linear infinite;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Scrollbar style Windows XP */
+.logs-container::-webkit-scrollbar {
+    width: 16px;
+}
+
+.logs-container::-webkit-scrollbar-track {
+    background: linear-gradient(to right, #d4d0c8 0%, #ece9d8 50%, #d4d0c8 100%);
+    border: 1px solid #848284;
+}
+
+.logs-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #fff 0%, #d6d3ce 100%);
+    border: 1px solid #003c74;
+    border-radius: 0;
+}
+
+.logs-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #fff 0%, #ece9db 100%);
+}
+
+.logs-container::-webkit-scrollbar-button {
+    height: 16px;
+    background: linear-gradient(to bottom, #fff 0%, #d6d3ce 100%);
+    border: 1px solid #003c74;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.2rem;
+    }
+    
+    .routes-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .status-bar {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .load-test-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .load-test-controls button {
+        width: 100%;
+    }
+}
+
+/* Easter egg - Luna theme authentic */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255,255,255,0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+}

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Collaboratif - Connexion</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1>📌 Tableau de Bord Collaboratif</h1>
+            <p class="subtitle">Créez et gérez vos notes en temps réel</p>
+        </div>
+
+        <!-- Affichage des messages d'erreur/succès -->
+        <div id="messageContainer" class="message-container" style="display: none;"></div>
+
+        <!-- Formulaire de connexion -->
+        <div id="loginForm" class="auth-form active">
+            <h2>Connexion</h2>
+            <form id="loginFormElement">
+                <div class="form-group">
+                    <label for="loginUsername">Nom d'utilisateur</label>
+                    <input 
+                        type="text" 
+                        id="loginUsername" 
+                        name="username"
+                        placeholder="Votre nom d'utilisateur"
+                        required
+                        minlength="3"
+                        autocomplete="username"
+                    >
+                    <small class="form-hint">Minimum 3 caractères</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Mot de passe</label>
+                    <input 
+                        type="password" 
+                        id="loginPassword" 
+                        name="password"
+                        placeholder="Votre mot de passe"
+                        required
+                        minlength="6"
+                        autocomplete="current-password"
+                    >
+                    <small class="form-hint">Minimum 6 caractères</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="loginBtn">
+                    <span class="btn-text">Se connecter</span>
+                    <span class="btn-loading" style="display: none;">
+                        <span class="spinner"></span> Connexion...
+                    </span>
+                </button>
+            </form>
+
+            <div class="auth-switch">
+                <p>Pas encore de compte ? <a href="#" id="showRegister">S'inscrire</a></p>
+            </div>
+        </div>
+
+        <!-- Formulaire d'inscription -->
+        <div id="registerForm" class="auth-form">
+            <h2>Inscription</h2>
+            <form id="registerFormElement">
+                <div class="form-group">
+                    <label for="registerUsername">Nom d'utilisateur</label>
+                    <input 
+                        type="text" 
+                        id="registerUsername" 
+                        name="username"
+                        placeholder="Choisissez un nom d'utilisateur"
+                        required
+                        minlength="3"
+                        autocomplete="username"
+                    >
+                    <small class="form-hint">Minimum 3 caractères, lettres et chiffres uniquement</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPassword">Mot de passe</label>
+                    <input 
+                        type="password" 
+                        id="registerPassword" 
+                        name="password"
+                        placeholder="Choisissez un mot de passe"
+                        required
+                        minlength="6"
+                        autocomplete="new-password"
+                    >
+                    <small class="form-hint">Minimum 6 caractères</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPasswordConfirm">Confirmer le mot de passe</label>
+                    <input 
+                        type="password" 
+                        id="registerPasswordConfirm" 
+                        name="passwordConfirm"
+                        placeholder="Confirmez votre mot de passe"
+                        required
+                        minlength="6"
+                        autocomplete="new-password"
+                    >
+                    <small class="form-hint">Doit correspondre au mot de passe</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="registerBtn">
+                    <span class="btn-text">S'inscrire</span>
+                    <span class="btn-loading" style="display: none;">
+                        <span class="spinner"></span> Inscription...
+                    </span>
+                </button>
+            </form>
+
+            <div class="auth-switch">
+                <p>Déjà un compte ? <a href="#" id="showLogin">Se connecter</a></p>
+            </div>
+        </div>
+
+        <div class="auth-footer">
+            <p>🔒 Vos données sont sécurisées avec JWT et bcrypt</p>
+        </div>
+    </div>
+
+    <script>
+        // Vérifier si l'utilisateur est déjà connecté
+        const token = localStorage.getItem('token');
+        if (token) {
+            // Vérifier si le token est valide en essayant de récupérer les notes
+            fetch('/notes', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Token valide, rediriger vers l'application
+                    window.location.href = '/app.html';
+                } else {
+                    // Token invalide, le supprimer
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('username');
+                }
+            })
+            .catch(() => {
+                // Erreur de connexion, rester sur la page de connexion
+            });
+        }
+
+        // Basculer entre les formulaires
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const showRegisterLink = document.getElementById('showRegister');
+        const showLoginLink = document.getElementById('showLogin');
+        const messageContainer = document.getElementById('messageContainer');
+
+        showRegisterLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.classList.remove('active');
+            registerForm.classList.add('active');
+            clearMessage();
+        });
+
+        showLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerForm.classList.remove('active');
+            loginForm.classList.add('active');
+            clearMessage();
+        });
+
+        // Fonctions d'affichage des messages
+        function showMessage(message, type = 'error') {
+            messageContainer.textContent = message;
+            messageContainer.className = `message-container ${type}`;
+            messageContainer.style.display = 'block';
+        }
+
+        function clearMessage() {
+            messageContainer.style.display = 'none';
+            messageContainer.textContent = '';
+        }
+
+        // Fonctions de loading
+        function setLoading(button, loading) {
+            const btnText = button.querySelector('.btn-text');
+            const btnLoading = button.querySelector('.btn-loading');
+            
+            if (loading) {
+                btnText.style.display = 'none';
+                btnLoading.style.display = 'inline-flex';
+                button.disabled = true;
+            } else {
+                btnText.style.display = 'inline';
+                btnLoading.style.display = 'none';
+                button.disabled = false;
+            }
+        }
+
+        // Gestion du formulaire de connexion
+        const loginFormElement = document.getElementById('loginFormElement');
+        const loginBtn = document.getElementById('loginBtn');
+
+        loginFormElement.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearMessage();
+
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (username.length < 3) {
+                showMessage('Le nom d\'utilisateur doit contenir au moins 3 caractères', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('Le mot de passe doit contenir au moins 6 caractères', 'error');
+                return;
+            }
+
+            setLoading(loginBtn, true);
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Succès - sauvegarder le token et rediriger
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('username', data.user.username);
+                    localStorage.setItem('userId', data.user.id);
+                    
+                    showMessage('Connexion réussie ! Redirection...', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = '/app.html';
+                    }, 1000);
+                } else {
+                    // Erreur
+                    showMessage(data.error || 'Erreur lors de la connexion', 'error');
+                    setLoading(loginBtn, false);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showMessage('Impossible de se connecter au serveur', 'error');
+                setLoading(loginBtn, false);
+            }
+        });
+
+        // Gestion du formulaire d'inscription
+        const registerFormElement = document.getElementById('registerFormElement');
+        const registerBtn = document.getElementById('registerBtn');
+
+        registerFormElement.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearMessage();
+
+            const username = document.getElementById('registerUsername').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+
+            // Validation côté client
+            if (username.length < 3) {
+                showMessage('Le nom d\'utilisateur doit contenir au moins 3 caractères', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('Le mot de passe doit contenir au moins 6 caractères', 'error');
+                return;
+            }
+
+            if (password !== passwordConfirm) {
+                showMessage('Les mots de passe ne correspondent pas', 'error');
+                return;
+            }
+
+            setLoading(registerBtn, true);
+
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Succès - sauvegarder le token et rediriger
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('username', data.user.username);
+                    localStorage.setItem('userId', data.user.id);
+                    
+                    showMessage('Inscription réussie ! Redirection...', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = '/app.html';
+                    }, 1000);
+                } else {
+                    // Erreur
+                    showMessage(data.error || 'Erreur lors de l\'inscription', 'error');
+                    setLoading(registerBtn, false);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showMessage('Impossible de se connecter au serveur', 'error');
+                setLoading(registerBtn, false);
+            }
+        });
+    </script>
+</body>
+</html>
+

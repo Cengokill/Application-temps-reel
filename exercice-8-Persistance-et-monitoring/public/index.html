@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo App - Connexion</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="auth-container">
+      <h1>Todo App Temps Réel</h1>
+      <p class="subtitle">Synchronisation instantanée entre vos appareils</p>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="login">Connexion</button>
+        <button class="tab-btn" data-tab="register">Inscription</button>
+      </div>
+
+      <!-- Formulaire de connexion -->
+      <form id="login-form" class="auth-form active">
+        <h2>Se connecter</h2>
+        
+        <div class="form-group">
+          <label for="login-username">Nom d'utilisateur</label>
+          <input 
+            type="text" 
+            id="login-username" 
+            name="username" 
+            required
+            autocomplete="username"
+            placeholder="Votre nom d'utilisateur"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="login-password">Mot de passe</label>
+          <input 
+            type="password" 
+            id="login-password" 
+            name="password" 
+            required
+            autocomplete="current-password"
+            placeholder="Votre mot de passe"
+          >
+        </div>
+
+        <div class="error-message" id="login-error"></div>
+
+        <button type="submit" class="btn btn-primary">
+          Se connecter
+        </button>
+      </form>
+
+      <!-- Formulaire d'inscription -->
+      <form id="register-form" class="auth-form">
+        <h2>Créer un compte</h2>
+        
+        <div class="form-group">
+          <label for="register-username">Nom d'utilisateur</label>
+          <input 
+            type="text" 
+            id="register-username" 
+            name="username" 
+            required
+            autocomplete="username"
+            placeholder="Choisissez un nom (3-20 caractères)"
+            minlength="3"
+            maxlength="20"
+          >
+          <small>Lettres, chiffres et underscore uniquement</small>
+        </div>
+
+        <div class="form-group">
+          <label for="register-password">Mot de passe</label>
+          <input 
+            type="password" 
+            id="register-password" 
+            name="password" 
+            required
+            autocomplete="new-password"
+            placeholder="Minimum 4 caractères"
+            minlength="4"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="register-password-confirm">Confirmer le mot de passe</label>
+          <input 
+            type="password" 
+            id="register-password-confirm" 
+            name="password-confirm" 
+            required
+            autocomplete="new-password"
+            placeholder="Répétez votre mot de passe"
+            minlength="4"
+          >
+        </div>
+
+        <div class="error-message" id="register-error"></div>
+
+        <button type="submit" class="btn btn-primary">
+          S'inscrire
+        </button>
+      </form>
+
+      <div class="info-box">
+        <p>Application de démonstration avec :</p>
+        <ul>
+          <li>Synchronisation temps réel via WebSocket</li>
+          <li>Persistance locale avec SQLite</li>
+          <li>Reconnexion automatique</li>
+          <li>Monitoring de latence</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Gestion des onglets
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        
+        // Mettre à jour les boutons
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Afficher le bon formulaire
+        if (tab === 'login') {
+          loginForm.classList.add('active');
+          registerForm.classList.remove('active');
+        } else {
+          registerForm.classList.add('active');
+          loginForm.classList.remove('active');
+        }
+
+        // Effacer les erreurs
+        document.getElementById('login-error').textContent = '';
+        document.getElementById('register-error').textContent = '';
+      });
+    });
+
+    // Soumission du formulaire de connexion
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
+      const errorDiv = document.getElementById('login-error');
+
+      errorDiv.textContent = '';
+
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Sauvegarder le token
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('username', data.user.username);
+          localStorage.setItem('userId', data.user.id);
+
+          // Rediriger vers l'application
+          window.location.href = '/app.html';
+        } else {
+          errorDiv.textContent = data.error || 'Erreur lors de la connexion';
+        }
+      } catch (error) {
+        errorDiv.textContent = 'Impossible de se connecter au serveur';
+        console.error('Erreur:', error);
+      }
+    });
+
+    // Soumission du formulaire d'inscription
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('register-username').value;
+      const password = document.getElementById('register-password').value;
+      const passwordConfirm = document.getElementById('register-password-confirm').value;
+      const errorDiv = document.getElementById('register-error');
+
+      errorDiv.textContent = '';
+
+      // Vérifier que les mots de passe correspondent
+      if (password !== passwordConfirm) {
+        errorDiv.textContent = 'Les mots de passe ne correspondent pas';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Sauvegarder le token
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('username', data.user.username);
+          localStorage.setItem('userId', data.user.id);
+
+          // Rediriger vers l'application
+          window.location.href = '/app.html';
+        } else {
+          errorDiv.textContent = data.error || 'Erreur lors de l\'inscription';
+        }
+      } catch (error) {
+        errorDiv.textContent = 'Impossible de se connecter au serveur';
+        console.error('Erreur:', error);
+      }
+    });
+
+    // Vérifier si l'utilisateur est déjà connecté
+    if (localStorage.getItem('token')) {
+      window.location.href = '/app.html';
+    }
+  </script>
+</body>
+</html>
+

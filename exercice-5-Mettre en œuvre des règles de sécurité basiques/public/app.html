@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Collaboratif</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="app-page">
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-left">
+            <h1>📌 Tableau de Bord Collaboratif</h1>
+            <span class="connection-status" id="connectionStatus">
+                <span class="status-dot"></span>
+                <span class="status-text">Connexion...</span>
+            </span>
+        </div>
+        <div class="header-right">
+            <span class="user-info">
+                Connecté en tant que <strong id="currentUsername">-</strong>
+            </span>
+            <button id="logoutBtn" class="btn btn-secondary">
+                Déconnexion
+            </button>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="app-main">
+        <!-- Zone d'ajout de note -->
+        <section class="add-note-section">
+            <h2>✏️ Créer une nouvelle note</h2>
+            <form id="addNoteForm">
+                <div class="form-group">
+                    <textarea 
+                        id="noteContent" 
+                        name="content"
+                        placeholder="Écrivez votre note ici..."
+                        required
+                        maxlength="1000"
+                        rows="4"
+                    ></textarea>
+                    <div class="char-counter">
+                        <span id="charCount">0</span> / 1000 caractères
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" id="addNoteBtn">
+                    <span class="btn-text">➕ Ajouter la note</span>
+                    <span class="btn-loading" style="display: none;">
+                        <span class="spinner"></span> Ajout...
+                    </span>
+                </button>
+            </form>
+        </section>
+
+        <!-- Messages d'erreur/succès -->
+        <div id="messageContainer" class="message-container" style="display: none;"></div>
+
+        <!-- Statistiques -->
+        <section class="stats-section">
+            <div class="stat-card">
+                <div class="stat-icon">📝</div>
+                <div class="stat-info">
+                    <div class="stat-value" id="totalNotes">0</div>
+                    <div class="stat-label">Notes totales</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👤</div>
+                <div class="stat-info">
+                    <div class="stat-value" id="myNotes">0</div>
+                    <div class="stat-label">Mes notes</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-info">
+                    <div class="stat-value" id="otherNotes">0</div>
+                    <div class="stat-label">Notes des autres</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Grille de notes -->
+        <section class="notes-section">
+            <div class="notes-header">
+                <h2>📋 Toutes les notes</h2>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">Toutes</button>
+                    <button class="filter-btn" data-filter="mine">Mes notes</button>
+                    <button class="filter-btn" data-filter="others">Autres</button>
+                </div>
+            </div>
+            
+            <div id="notesGrid" class="notes-grid">
+                <!-- Les notes seront ajoutées ici dynamiquement -->
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <p>Aucune note pour le moment</p>
+                    <p class="empty-hint">Créez votre première note ci-dessus !</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal d'édition de note -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✏️ Modifier la note</h3>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <form id="editNoteForm">
+                <input type="hidden" id="editNoteId">
+                <div class="form-group">
+                    <label for="editNoteContent">Contenu</label>
+                    <textarea 
+                        id="editNoteContent" 
+                        name="content"
+                        required
+                        maxlength="1000"
+                        rows="6"
+                    ></textarea>
+                    <div class="char-counter">
+                        <span id="editCharCount">0</span> / 1000 caractères
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelEdit">
+                        Annuler
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="saveEditBtn">
+                        <span class="btn-text">💾 Sauvegarder</span>
+                        <span class="btn-loading" style="display: none;">
+                            <span class="spinner"></span> Sauvegarde...
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation de suppression -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3>🗑️ Supprimer la note</h3>
+                <button class="modal-close" id="closeDeleteModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer cette note ?</p>
+                <p class="warning-text">Cette action est irréversible.</p>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="cancelDelete">
+                    Annuler
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">
+                    <span class="btn-text">🗑️ Supprimer</span>
+                    <span class="btn-loading" style="display: none;">
+                        <span class="spinner"></span> Suppression...
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
+

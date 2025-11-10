@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "content": "Note de Bob aaaaaaaannaaa",
+    "authorId": 2,
+    "authorUsername": "Bob",
+    "createdAt": "2025-11-07T08:39:37.251Z",
+    "updatedAt": "2025-11-07T08:44:14.562Z"
+  },
+  {
+    "id": 2,
+    "content": "note 2",
+    "authorId": 1,
+    "authorUsername": "Cengokill",
+    "createdAt": "2025-11-07T08:51:29.110Z",
+    "updatedAt": "2025-11-07T08:51:29.110Z"
+  }
+]

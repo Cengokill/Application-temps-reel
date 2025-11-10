@@ -1,0 +1,39 @@
+# Node modules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Fichiers de données (optionnel - commenter si vous voulez versionner)
+# server/users.json
+# server/notes.json
+
+# Variables d'environnement
+.env
+.env.local
+.env.production
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+logs/
+*.log
+
+# Build
+dist/
+build/
+
+# Certificats SSL (si utilisés)
+*.pem
+*.key
+*.crt
+

@@ -1,0 +1,24 @@
+# Dépendances
+node_modules/
+
+# Variables d'environnement
+.env
+
+# Logs
+logs/
+*.log
+
+# Fichiers de l'OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# New Relic
+newrelic_agent.log
+
