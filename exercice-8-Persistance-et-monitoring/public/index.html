@@ -117,6 +117,8 @@
   </div>
 
   <script>
+    // console.log('init page login');
+    
     // Gestion des onglets
     const tabBtns = document.querySelectorAll('.tab-btn');
     const loginForm = document.getElementById('login-form');
@@ -125,12 +127,13 @@
     tabBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         const tab = btn.dataset.tab;
+        // console.log('changement tab:', tab);
         
-        // Mettre à jour les boutons
+        // Met à jour les boutons
         tabBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        // Afficher le bon formulaire
+        // Affiche le bon formulaire
         if (tab === 'login') {
           loginForm.classList.add('active');
           registerForm.classList.remove('active');
@@ -139,7 +142,7 @@
           loginForm.classList.remove('active');
         }
 
-        // Effacer les erreurs
+        // Efface les erreurs
         document.getElementById('login-error').textContent = '';
         document.getElementById('register-error').textContent = '';
       });
@@ -152,6 +155,7 @@
       const username = document.getElementById('login-username').value;
       const password = document.getElementById('login-password').value;
       const errorDiv = document.getElementById('login-error');
+      // console.log('tentative login pour:', username);
 
       errorDiv.textContent = '';
 
@@ -165,14 +169,16 @@
         const data = await response.json();
 
         if (response.ok) {
-          // Sauvegarder le token
+          // Sauvegarde le token
+          // console.log('login ok, token reçu');
           localStorage.setItem('token', data.token);
           localStorage.setItem('username', data.user.username);
           localStorage.setItem('userId', data.user.id);
 
-          // Rediriger vers l'application
+          // Redirige vers l'application
           window.location.href = '/app.html';
         } else {
+          // console.log('erreur login:', data.error);
           errorDiv.textContent = data.error || 'Erreur lors de la connexion';
         }
       } catch (error) {
@@ -192,12 +198,14 @@
 
       errorDiv.textContent = '';
 
-      // Vérifier que les mots de passe correspondent
+      // Vérifie que les mots de passe correspondent
       if (password !== passwordConfirm) {
+        // console.log('mdp pas identiques');
         errorDiv.textContent = 'Les mots de passe ne correspondent pas';
         return;
       }
 
+      // console.log('inscription en cours pour:', username);
       try {
         const response = await fetch('/api/register', {
           method: 'POST',
@@ -208,12 +216,12 @@
         const data = await response.json();
 
         if (response.ok) {
-          // Sauvegarder le token
+          // Sauvegarde le token
           localStorage.setItem('token', data.token);
           localStorage.setItem('username', data.user.username);
           localStorage.setItem('userId', data.user.id);
 
-          // Rediriger vers l'application
+          // Redirige vers l'application
           window.location.href = '/app.html';
         } else {
           errorDiv.textContent = data.error || 'Erreur lors de l\'inscription';
@@ -224,8 +232,10 @@
       }
     });
 
-    // Vérifier si l'utilisateur est déjà connecté
+    // Vérifie si l'utilisateur est déjà connecté
+    // console.log('check token existant');
     if (localStorage.getItem('token')) {
+      // console.log('token trouvé, redirection');
       window.location.href = '/app.html';
     }
   </script>

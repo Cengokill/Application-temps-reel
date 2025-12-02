@@ -4,14 +4,13 @@ Ce document décrit les tests manuels à effectuer pour vérifier le bon fonctio
 
 ## Préparation
 
-1. Démarrer le serveur avec `./start.sh` (Linux/Mac) ou `start.bat` (Windows)
-2. Vérifier que le serveur démarre sans erreur
-3. Ouvrir le navigateur sur `http://localhost:3000`
+1. Démarrer le serveur avec `npm start`.
+2. Ouvrir le navigateur sur `http://localhost:3000`.
 
 ## Test 1 - Inscription et Authentification
 
 ### Objectif
-Vérifier que l'inscription et la connexion fonctionnent correctement.
+Vérifier que l'inscription et la connexion fonctionnent.
 
 ### Étapes
 
@@ -52,20 +51,21 @@ Vérifier les opérations de création, lecture, modification et suppression.
 ### Étapes
 
 1. **Création de todos**
-   - Entrer "Faire les courses" dans le champ
+   - Entrer "Todo test" dans le champ
    - Cliquer "Ajouter"
-   - Vérifier que le todo apparait dans la liste
-   - Ajouter 4-5 autres todos
+   - Vérifier que le todo apparaît dans la liste juste en-dessous
+   - Ajouter d'autres todos et vérifier qu'ils apparaissent aussi
 
 2. **Résultat attendu**
-   - Chaque todo apparait instantanément
-   - Date de création affichée
-   - Compteur mis à jour (ex: "5 tâche(s)")
+   - Chaque todo apparaît instantanément
+   - Date de création affichée ("Créé le XX/XX/XXX à XX:XX)
+   - Le compteur est mis à jour (ex: "5 tâche(s)")
 
 3. **Complétion de todo**
    - Cocher la case d'un todo
    - Vérifier que le texte devient barré
    - Vérifier que le compteur "terminée(s)" augmente
+   - Lors du clic sur le bouton "Terminées", les todo terminées s'affichent
 
 4. **Modification de todo**
    - Cliquer sur l'icône crayon
@@ -75,8 +75,8 @@ Vérifier les opérations de création, lecture, modification et suppression.
 
 5. **Suppression de todo**
    - Cliquer sur l'icône poubelle
-   - Confirmer la suppression
-   - Vérifier que le todo disparait
+   - Un popup apparaît : confirmer la suppression
+   - Vérifier que le todo disparaît
    - Vérifier que le compteur est mis à jour
 
 6. **Filtres**
@@ -93,7 +93,7 @@ Vérifier que les changements se synchronisent en temps réel entre onglets.
 
 1. **Préparation**
    - Se connecter avec le même compte dans l'onglet 1
-   - Dupliquer l'onglet (Ctrl+Shift+D ou clic droit > dupliquer)
+   - Dupliquer l'onglet
    - Placer les deux onglets côte à côte
 
 2. **Test création**
@@ -130,7 +130,7 @@ Vérifier que les données survivent au redémarrage du serveur.
 
 2. **Redémarrage serveur**
    - Arrêter le serveur (Ctrl+C dans le terminal)
-   - Redémarrer avec `./start.sh` ou `start.bat`
+   - Redémarrer
    - Rafraichir la page navigateur
 
 3. **Résultat attendu**
@@ -141,7 +141,6 @@ Vérifier que les données survivent au redémarrage du serveur.
 4. **Vérification base de données**
    - Aller dans `server/`
    - Vérifier qu'un fichier `todos.db` existe
-   - (Optionnel) Ouvrir avec un client SQLite
 
 ## Test 5 - Reconnexion Automatique
 
@@ -152,7 +151,7 @@ Vérifier le mécanisme de reconnexion automatique avec exponential backoff.
 
 1. **Simulation déconnexion**
    - Application ouverte et connectée
-   - Arrêter le serveur (Ctrl+C)
+   - Arrêter le serveur
    - Observer le statut de connexion
 
 2. **Résultat attendu**
@@ -175,7 +174,7 @@ Vérifier le mécanisme de reconnexion automatique avec exponential backoff.
    - Une synchronisation complète doit se faire
 
 6. **Console navigateur**
-   - Ouvrir DevTools (F12)
+   - Ouvrir DevTools
    - Observer les logs de reconnexion
    - Vérifier les délais exponentiels
 
@@ -213,19 +212,7 @@ Vérifier que les métriques de monitoring fonctionnent.
 
 5. **Endpoint santé**
    - Ouvrir `http://localhost:3000/api/health`
-   - Vérifier la réponse JSON avec métriques:
-     ```json
-     {
-       "status": "ok",
-       "metrics": {
-         "connections": { "active": 1, "total": 5 },
-         "messages": { "total": 42, "perSecond": 2 },
-         "latency": { "average": 15, "samples": 10 },
-         "errors": 0,
-         "uptime": 120
-       }
-     }
-     ```
+   - Vérifier la réponse JSON avec métriques
 
 ## Test 7 - Sécurité
 
@@ -236,9 +223,9 @@ Vérifier les mesures de sécurité implémentées.
 
 1. **Validation longueur**
    - Essayer de créer un todo avec texte très long (> 500 caractères)
-   - Vérifier qu'une erreur est affichée
    - Essayer nom d'utilisateur > 20 caractères
-   - Vérifier qu'une erreur est affichée
+   - Le champs de texte sont limités et ne permettent pas de dépasser ces longueurs
+   - Même si c'est contourné, un message d'erreur appraîtra
 
 2. **Sanitisation XSS**
    - Créer un todo avec `<script>alert('XSS')</script>`
@@ -246,8 +233,8 @@ Vérifier les mesures de sécurité implémentées.
    - Le texte doit apparaitre échappé
 
 3. **Limite de todos**
-   - Créer 50 todos (peut utiliser un script ou manuellement)
-   - Essayer de créer le 51ème
+   - Créer 4 todos
+   - Essayer de créer le 5ème
    - Vérifier qu'un message d'erreur apparait
 
 4. **Token JWT**
@@ -262,12 +249,6 @@ Vérifier les mesures de sécurité implémentées.
 
 5. **Rate limiting**
    - Faire beaucoup de requêtes rapidement (> 100/min)
-   - Ouvrir un script dans la console:
-     ```javascript
-     for(let i = 0; i < 110; i++) {
-       fetch('/api/health');
-     }
-     ```
    - Vérifier qu'après ~100 requêtes, erreur 429 (Too Many Requests)
 
 6. **Isolation utilisateurs**
@@ -289,72 +270,15 @@ Vérifier que l'interface s'adapte aux différentes tailles d'écran.
    - Vérifier l'affichage en plein écran
    - Tous les éléments doivent être alignés correctement
 
-2. **Tablette**
-   - Ouvrir DevTools (F12)
-   - Activer le mode responsive (Ctrl+Shift+M)
-   - Sélectionner "iPad"
-   - Vérifier que l'interface s'adapte
-
-3. **Mobile**
-   - Sélectionner "iPhone 12"
+2. **Mobile**
+   - Sélectionner un mobile
    - Vérifier que:
      - Le header passe en colonne
      - Les indicateurs sont empilés verticalement
      - Le formulaire d'ajout est en colonne
      - Les todos sont lisibles
 
-4. **Redimensionnement**
+3. **Redimensionnement**
    - Redimensionner la fenêtre progressivement
    - Vérifier qu'il n'y a pas de casse visuelle
    - Vérifier que tout reste accessible
-
-## Résultats
-
-### Checklist globale
-
-- [ ] Inscription fonctionne
-- [ ] Connexion fonctionne
-- [ ] Validation des erreurs d'authentification
-- [ ] Création de todos
-- [ ] Modification de todos
-- [ ] Complétion de todos
-- [ ] Suppression de todos
-- [ ] Filtres (toutes/actives/terminées)
-- [ ] Synchronisation multi-onglets instantanée
-- [ ] Persistance après redémarrage serveur
-- [ ] Reconnexion automatique avec exponential backoff
-- [ ] Queue d'actions pendant déconnexion
-- [ ] Nombre d'utilisateurs connectés correct
-- [ ] Latence mesurée et affichée
-- [ ] Logs serveur fonctionnels
-- [ ] Logs fichiers créés
-- [ ] Endpoint /api/health répond
-- [ ] Validation longueur textes
-- [ ] Sanitisation XSS
-- [ ] Limite 50 todos par user
-- [ ] Rate limiting (429 après abus)
-- [ ] Isolation des données par user
-- [ ] Interface responsive (mobile/tablette/desktop)
-
-### Bugs trouvés
-
-Documenter ici tout bug découvert lors des tests:
-
-1. 
-2. 
-3. 
-
-### Améliorations suggérées
-
-Documenter ici les améliorations identifiées:
-
-1. 
-2. 
-3. 
-
----
-
-**Date des tests:** ___________  
-**Testé par:** ___________  
-**Résultat global:** [ ] Réussi [ ] Échoué [ ] Partiel  
-

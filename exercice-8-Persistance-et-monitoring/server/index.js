@@ -25,7 +25,7 @@ const io = socketIo(server, {
 });
 
 const PORT = process.env.PORT || 3000;
-const MAX_TODOS_PER_USER = 50;
+const MAX_TODOS_PER_USER = 4;
 const MAX_TODO_LENGTH = 500;
 
 // Middleware

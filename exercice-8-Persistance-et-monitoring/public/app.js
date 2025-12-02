@@ -3,15 +3,19 @@
  * Gestion de la connexion WebSocket, reconnexion automatique, et interface
  */
 
-// Vérifier l'authentification
+// Authentification
 const token = localStorage.getItem('token');
 const username = localStorage.getItem('username');
 
+// console.log('token:', token ? 'ok' : 'manquant');
+// console.log('user:', username);
+
 if (!token || !username) {
+  // console.log('pas de token, redirect login');
   window.location.href = '/index.html';
 }
 
-// Afficher le nom d'utilisateur
+// Affiche le nom d'utilisateur
 document.getElementById('username-display').textContent = username;
 
 // ============================================
@@ -40,6 +44,7 @@ let lastPingTime = 0;
  */
 function connectSocket() {
   console.log('Tentative de connexion au serveur...');
+  // console.log('config socketio');
 
   socket = io({
     auth: {
@@ -47,6 +52,8 @@ function connectSocket() {
     },
     reconnection: false // On gère la reconnexion nous-mêmes
   });
+
+  // console.log('socket id:', socket.id);
 
   // Événements de connexion
   socket.on('connect', handleConnect);
@@ -71,18 +78,22 @@ function connectSocket() {
  */
 function handleConnect() {
   console.log('Connecté au serveur');
+  // console.log('socket id:', socket.id);
+  // console.log('reconnect attempts reset');
+  
   isConnected = true;
   reconnectAttempts = 0;
   
   updateConnectionStatus('connected', 'Connecté');
 
-  // Demander la synchronisation des todos
+  // Demande la synchronisation des todos
+  // console.log('demande sync todos');
   socket.emit('todo:sync');
 
-  // Traiter les actions en attente
+  // Traite les actions en attente
   processQueue();
 
-  // Démarrer le monitoring de latence
+  // Démarre le monitoring de latence
   startLatencyMonitoring();
 }
 
@@ -92,13 +103,19 @@ function handleConnect() {
  */
 function handleDisconnect(reason) {
   console.log('Déconnecté:', reason);
+  // console.log('raison disconnect:', reason);
+  // console.log('connected:', isConnected, 'queue:', actionQueue.length);
+  
   isConnected = false;
   
   updateConnectionStatus('disconnected', 'Déconnecté');
 
   // Ne pas se reconnecter si c'est volontaire
   if (reason !== 'io client disconnect') {
+    // console.log('disconnect involontaire, reconnect...');
     scheduleReconnect();
+  } else {
+    // console.log('disconnect volontaire, pas de reconnect');
   }
 }
 
@@ -139,7 +156,7 @@ function scheduleReconnect() {
   const maxDelay = 30000;
   const delay = Math.min(baseDelay * Math.pow(2, reconnectAttempts), maxDelay);
   
-  // Ajouter du jitter (bruit aléatoire) pour éviter que tous les clients se reconnectent en même temps
+  // Ajoute du jitter (bruit aléatoire) pour éviter que tous les clients se reconnectent en même temps
   const jitter = Math.random() * 1000;
   const totalDelay = delay + jitter;
 
@@ -179,10 +196,12 @@ function updateConnectionStatus(status, text) {
  */
 function queueOrExecute(action) {
   if (isConnected) {
+    // console.log('action directe (connecté)');
     action();
   } else {
     actionQueue.push(action);
     console.log('Action mise en queue (déconnecté)');
+    // console.log('queue size:', actionQueue.length);
     showError('Déconnecté - L\'action sera envoyée lors de la reconnexion');
   }
 }
@@ -212,6 +231,9 @@ function processQueue() {
  */
 function handleTodoList(todoList) {
   console.log('Synchronisation:', todoList.length, 'todo(s)');
+  // console.log('todos reçus:', todoList);
+  // console.log('ancien:', todos.length, 'nouveau:', todoList.length);
+  
   todos = todoList;
   renderTodos();
 }
@@ -222,9 +244,11 @@ function handleTodoList(todoList) {
  */
 function handleTodoCreated(todo) {
   console.log('Todo créé:', todo);
+  // console.log('todo id:', todo.id, 'text:', todo.text.substring(0, 30));
   
-  // Ajouter au début de la liste
+  // Ajoute au début de la liste
   todos.unshift(todo);
+  // console.log('total todos:', todos.length);
   renderTodos();
 }
 
@@ -234,11 +258,16 @@ function handleTodoCreated(todo) {
  */
 function handleTodoUpdated(updatedTodo) {
   console.log('Todo mis à jour:', updatedTodo);
+  // console.log('update todo id:', updatedTodo.id);
+  // console.log('changements:', updatedTodo);
   
   const index = todos.findIndex(t => t.id === updatedTodo.id);
   if (index !== -1) {
+    // console.log('todo trouvé index:', index);
     todos[index] = updatedTodo;
     renderTodos();
+  } else {
+    // console.log('todo pas trouvé id:', updatedTodo.id);
   }
 }
 
@@ -248,8 +277,10 @@ function handleTodoUpdated(updatedTodo) {
  */
 function handleTodoDeleted(data) {
   console.log('Todo supprimé:', data.id);
+  // console.log('avant suppression:', todos.length);
   
   todos = todos.filter(t => t.id !== data.id);
+  // console.log('après suppression:', todos.length);
   renderTodos();
 }
 
@@ -258,7 +289,9 @@ function handleTodoDeleted(data) {
  * @param {string} text - Texte du todo
  */
 function createTodo(text) {
+  // console.log('create todo:', text.substring(0, 30));
   queueOrExecute(() => {
+    // console.log('emit todo:create');
     socket.emit('todo:create', { text });
   });
 }
@@ -269,7 +302,9 @@ function createTodo(text) {
  * @param {Object} updates - Champs à mettre à jour
  */
 function updateTodo(id, updates) {
+  // console.log('update todo:', id, updates);
   queueOrExecute(() => {
+    // console.log('emit todo:update');
     socket.emit('todo:update', { id, ...updates });
   });
 }
@@ -279,7 +314,9 @@ function updateTodo(id, updates) {
  * @param {number} id - ID du todo
  */
 function deleteTodo(id) {
+  // console.log('delete todo:', id);
   queueOrExecute(() => {
+    // console.log('emit todo:delete');
     socket.emit('todo:delete', { id });
   });
 }
@@ -294,56 +331,72 @@ function deleteTodo(id) {
  */
 function renderTodos() {
   const listElement = document.getElementById('todos-list');
-  const emptyState = document.getElementById('empty-state');
   const template = document.getElementById('todo-template');
 
-  // Filtrer les todos
+  // console.log('render todos, filter:', currentFilter);
+  // console.log('total:', todos.length);
+
+  // Filtre les todos
   let filteredTodos = todos;
   if (currentFilter === 'active') {
     filteredTodos = todos.filter(t => !t.completed);
+    // console.log('actifs:', filteredTodos.length);
   } else if (currentFilter === 'completed') {
     filteredTodos = todos.filter(t => t.completed);
+    // console.log('terminés:', filteredTodos.length);
   }
 
-  // Mettre à jour les statistiques
+  // Met à jour les statistiques
   const completedCount = todos.filter(t => t.completed).length;
   document.getElementById('todos-count').textContent = todos.length;
   document.getElementById('todos-completed').textContent = completedCount;
 
-  // Vider la liste
+  // Vide la liste
   listElement.innerHTML = '';
 
-  // Afficher état vide si nécessaire
+  // Affiche l'état vide si nécessaire
   if (filteredTodos.length === 0) {
-    emptyState.style.display = 'block';
+    const emptyState = document.createElement('div');
+    emptyState.className = 'empty-state';
+    emptyState.id = 'empty-state';
+    
+    const message = document.createElement('p');
     if (currentFilter === 'active') {
-      emptyState.querySelector('p').textContent = 'Aucune tâche active';
+      message.textContent = 'Aucune tâche active';
     } else if (currentFilter === 'completed') {
-      emptyState.querySelector('p').textContent = 'Aucune tâche terminée';
+      message.textContent = 'Aucune tâche terminée';
     } else {
-      emptyState.querySelector('p').textContent = 'Aucune tâche pour le moment';
+      message.textContent = 'Aucune tâche pour le moment';
     }
+    
+    const subtitle = document.createElement('p');
+    subtitle.className = 'empty-state-subtitle';
+    subtitle.textContent = 'Commencez par en ajouter une ci-dessus';
+    
+    emptyState.appendChild(message);
+    emptyState.appendChild(subtitle);
     listElement.appendChild(emptyState);
     return;
   }
 
-  emptyState.style.display = 'none';
-
-  // Créer les éléments
+  // Crée les éléments
+  // console.log('create', filteredTodos.length, 'elements');
   filteredTodos.forEach(todo => {
     const todoElement = template.content.cloneNode(true);
     const todoItem = todoElement.querySelector('.todo-item');
     
+    // console.log('create element todo id:', todo.id);
     todoItem.dataset.id = todo.id;
     
     const checkbox = todoElement.querySelector('.todo-checkbox-input');
     checkbox.checked = todo.completed;
     checkbox.addEventListener('change', () => {
+      // console.log('checkbox change id:', todo.id, 'completed:', checkbox.checked);
       updateTodo(todo.id, { completed: checkbox.checked });
     });
 
     const todoText = todoElement.querySelector('.todo-text');
-    // Decoder les entités HTML
+    // Décode les entités HTML
     const textarea = document.createElement('textarea');
     textarea.innerHTML = todo.text;
     todoText.textContent = textarea.value;
@@ -362,6 +415,7 @@ function renderTodos() {
     const editInput = todoElement.querySelector('.todo-edit-input');
     
     editBtn.addEventListener('click', () => {
+      // console.log('edit mode id:', todo.id);
       todoText.style.display = 'none';
       editInput.style.display = 'block';
       editInput.value = textarea.value;
@@ -370,8 +424,12 @@ function renderTodos() {
 
     editInput.addEventListener('blur', () => {
       const newText = editInput.value.trim();
+      // console.log('fin edit id:', todo.id);
       if (newText && newText !== textarea.value) {
+        // console.log('text changed:', textarea.value, '->', newText);
         updateTodo(todo.id, { text: newText });
+      } else {
+        // console.log('pas de changement');
       }
       todoText.style.display = 'block';
       editInput.style.display = 'none';
@@ -389,8 +447,12 @@ function renderTodos() {
     // Bouton supprimer
     const deleteBtn = todoElement.querySelector('.delete-btn');
     deleteBtn.addEventListener('click', () => {
+      // console.log('delete request id:', todo.id);
       if (confirm('Voulez-vous vraiment supprimer cette tâche ?')) {
+        // console.log('delete confirmé');
         deleteTodo(todo.id);
+      } else {
+        // console.log('delete annulé');
       }
     });
 
@@ -407,6 +469,7 @@ function renderTodos() {
  * @param {number} count - Nombre d'utilisateurs
  */
 function handleUsersCount(count) {
+  // console.log('users count:', count);
   document.getElementById('users-count').textContent = count;
 }
 
@@ -415,9 +478,11 @@ function handleUsersCount(count) {
  * @summary Envoie un ping toutes les 5 secondes
  */
 function startLatencyMonitoring() {
+  // console.log('start latency monitoring');
   setInterval(() => {
     if (isConnected) {
       lastPingTime = Date.now();
+      // console.log('ping sent:', lastPingTime);
       socket.emit('ping', lastPingTime);
     }
   }, 5000);
@@ -429,18 +494,22 @@ function startLatencyMonitoring() {
  */
 function handlePong(timestamp) {
   const latency = Date.now() - timestamp;
+  // console.log('pong reçu, latency:', latency, 'ms');
+  
   latencyHistory.push(latency);
 
-  // Garder seulement les 10 dernières mesures
+  // Garde seulement les 10 dernières mesures
   if (latencyHistory.length > 10) {
     latencyHistory.shift();
+    // console.log('latency history limité à 10');
   }
 
-  // Calculer la moyenne
+  // Calcule la moyenne
   const avgLatency = Math.round(
     latencyHistory.reduce((a, b) => a + b, 0) / latencyHistory.length
   );
 
+  // console.log('avg latency:', avgLatency, 'ms (', latencyHistory.length, 'mesures)');
   document.getElementById('latency-display').textContent = avgLatency + ' ms';
 }
 
@@ -449,6 +518,8 @@ function handlePong(timestamp) {
  * @param {string} message - Message à afficher
  */
 function handleError(data) {
+  // console.log('erreur serveur:', data);
+  // console.log('error msg:', data.message);
   showError(data.message);
 }
 
@@ -477,31 +548,45 @@ document.getElementById('add-todo-form').addEventListener('submit', (e) => {
   const input = document.getElementById('todo-input');
   const text = input.value.trim();
 
+  // console.log('submit form, text:', text);
+  
   if (text) {
     createTodo(text);
     input.value = '';
+    // console.log('input cleared');
+  } else {
+    // console.log('text vide, skip');
   }
 });
 
 // Filtres
 document.querySelectorAll('.filter-btn').forEach(btn => {
   btn.addEventListener('click', () => {
+    // console.log('filter change:', btn.dataset.filter);
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     
     currentFilter = btn.dataset.filter;
+    // console.log('nouveau filter:', currentFilter);
     renderTodos();
   });
 });
 
 // Déconnexion
 document.getElementById('logout-btn').addEventListener('click', () => {
+  // console.log('logout request');
   if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
+    // console.log('logout confirmé, cleanup...');
     localStorage.clear();
+    // console.log('localStorage cleared');
     if (socket) {
+      // console.log('socket disconnect');
       socket.disconnect();
     }
+    // console.log('redirect login');
     window.location.href = '/index.html';
+  } else {
+    // console.log('logout annulé');
   }
 });
 
@@ -510,5 +595,8 @@ document.getElementById('logout-btn').addEventListener('click', () => {
 // ============================================
 
 console.log('Initialisation de l\'application...');
+// console.log('user:', username);
+// console.log('token:', !!token);
+// console.log('init - connected:', isConnected, 'todos:', todos.length);
 connectSocket();
 
