@@ -17,8 +17,8 @@ Vérifier que l'inscription et la connexion fonctionnent.
 1. **Inscription**
    - Aller sur `http://localhost:3000`
    - Cliquer sur l'onglet "Inscription"
-   - Entrer un nom d'utilisateur (ex: `testuser1`)
-   - Entrer un mot de passe (ex: `test1234`)
+   - Entrer un nom d'utilisateur
+   - Entrer un mot de passe
    - Confirmer le mot de passe
    - Cliquer sur "S'inscrire"
 
